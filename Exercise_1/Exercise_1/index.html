@@ -28,16 +28,40 @@
     </div>
     
     <div class="panelContainer" >
+          <label >Low-pass Filter</label><br><br>
           <label for="cutOffFreq">Cutoff Frequency:</label>
-          <button id="cutOffFreq" onclick="cutOffFreq()"></button>
+          <button id="cutOffFreq" onclick="cutOffFreqClick()"></button>
           <label for="resonance">Resonance:</label>
-          <button id="resonance" onclick="setResonance()"></button>
-          <label for="lowPassFilter">dry/Wet:</label>
-          <input type="range" id="volumeSlider" min="0" max="100" value="5" step="1">
-          <label for="lowPassFilter">Output level:</label>
-          <input type="range" id="volumeSlider" min="0" max="100" value="5" step="1">
+          <button id="resonance" onclick="setResonanceClick()"></button>
+          <label for="dryWet">dry/Wet:</label>
+          <input type="range" id="dryWet" min="0" max="100" value="5" step="1">
+          <label for="outputLevel">Output level:</label>
+          <input type="range" id="outputLevel" min="0" max="100" value="5" step="1">
     </div>
-
+    <div class="panelContainer" >
+          <label >Reverb</label><br><br>
+          <label for="reverbDuration">Reverb duration</label>
+          <button id="reverbDuration" onclick="reverbDurationClick()"></button>
+          <label for="decayRate">Decay Rate</label>
+          <button id="decayRate" onclick="decayRateClick()"></button>
+          <label for="reverse">Reverse</label>
+          <button id="reverse" onclick="reverseClick()"></button>
+          <label for="reverbDryWet">dry/Wet:</label>
+          <input type="range" id="reverbDryWet" min="0" max="100" value="5" step="1">
+          <label for="reverbOutputLevel">Output level:</label>
+          <input type="range" id="reverbOutputLevel" min="0" max="100" value="5" step="1">
+    </div>
+    <div class="panelContainer" >
+        <label >Waveshaper Distortion</label><br><br>
+          <label for="distortionAmount">Distortion Amount:</label>
+          <button id="distortionAmount" onclick="distortionAmountClick()"></button>
+          <label for="overSample">Over Sample:</label>
+          <button id="overSample" onclick="overSampleClick()"></button>
+          <label for="wDistDryWet">dry/Wet:</label>
+          <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
+          <label for="wDistOutputLevel">Output level:</label>
+          <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
+    </div>
   <canvas></canvas>
 </body>
 <footer>
