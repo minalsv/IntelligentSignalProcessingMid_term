@@ -17,7 +17,7 @@
 	<script src="sketch.js"></script>
 </head>
 <body>
-    <div class="panelContainer">
+    <div class="panelContainer" >
         <button id="pauseButton" onclick="pausePlayback()">Pause</button>
         <button id="playButton" onclick="togglePlayback()">Play</button>
         <button id="stopButton" onclick="stopPlayback()">Stop</button>
@@ -26,12 +26,29 @@
         <button id="loopButton" onclick="toggleLoop()">Loop</button>
         <button id="recordButton" onclick="toggleRecording()">Record</button>
     </div>
-  <br>
-  <canvas></canvas>
+    
+    <div class="panelContainer" >
+          <label for="cutOffFreq">Cutoff Frequency:</label>
+          <button id="cutOffFreq" onclick="cutOffFreq()"></button>
+          <label for="resonance">Resonance:</label>
+          <button id="resonance" onclick="setResonance()"></button>
+          <label for="lowPassFilter">dry/Wet:</label>
+          <input type="range" id="volumeSlider" min="0" max="100" value="5" step="1">
+          <label for="lowPassFilter">Output level:</label>
+          <input type="range" id="volumeSlider" min="0" max="100" value="5" step="1">
+    </div>
 
+  <canvas></canvas>
+</body>
+<footer>
+    <div class="panelContainer" >
+        <label for="masterVolume">Master Volume:</label>
+        <input type="range" id="volumeSlider" min="0" max="100" value="5" step="1"> 
+    </div>
+</footer>
   <script>
     // Your p5.js sketch code goes here
   </script>
-</body>
+
 
 </html>

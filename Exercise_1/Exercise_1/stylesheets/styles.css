@@ -12,6 +12,12 @@ background-color: lightcyan;
 
 text-align: center;
 
+border-radius: 25px;
+
+width : 70%
+    
+align: center;
+
 }
 
 .panelContainer h2 {
@@ -44,4 +50,8 @@ font-size: 16px;
 
 cursor: pointer;
 
+}
+
+.volumeSlider {
+  width: 600px;
 }
