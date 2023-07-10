@@ -18,16 +18,16 @@
 </head>
 <body>
     <div class="panelContainer" >
-        <button id="pauseButton" onclick="pausePlayback()">Pause</button>
+        <button_nav id="pauseButton" onclick="pausePlayback()">Pause</button_nav>
         
-        <button id="playButton" onclick="togglePlayback()">Play</button>
-        <button id="stopButton" onclick="stopPlayback()">Stop</button>
-        <button id="skipToStartButton" onclick="skipToStart()">Skip to Start</button>
-        <button id="skipToEndButton" onclick="skipToEnd()">Skip to End</button>
-        <button id="loopButton" onclick="toggleLoop()">Loop</button>
-        <button id="recordButton" onclick="toggleRecording()">Record</button>
+        <button_nav id="playButton" onclick="togglePlayback()">Play</button_nav>
+        <button_nav id="stopButton" onclick="stopPlayback()">Stop</button_nav>
+        <button_nav id="skipToStartButton" onclick="skipToStart()">Skip to Start</button_nav>
+        <button_nav id="skipToEndButton" onclick="skipToEnd()">Skip to End</button_nav>
+        <button_nav id="loopButton" onclick="toggleLoop()">Loop</button_nav>
+        <button_nav id="recordButton" onclick="toggleRecording()">Record</button_nav>
     </div>
-    
+    <div class="row" >
     <div class="panelContainer" >
         <h2><label for="filter">Filter:</label></h2>
             <select id="filter" onchange="setFilterType(this.value)">
@@ -36,9 +36,9 @@
                 <option value="bandpass">Band-Pass</option>
             </select>
           <br><br>
-          <label for="cutOffFreq">Cutoff Frequency:</label>
+          <label for="cutOffFreq">Cutoff Frequency:</label><t
+          <label for="resonance">Resonance:</label><br>
           <button id="cutOffFreq" onclick="cutOffFreqClick()"></button>
-          <label for="resonance">Resonance:</label>
           <button id="resonance" onclick="setResonanceClick()"></button><br><br>
           <label for="dryWet">dry/Wet:</label>
           <input type="range" id="dryWet" min="0" max="100" value="5" step="1">
@@ -58,17 +58,20 @@
           <label for="reverbOutputLevel">Output level:</label>
           <input type="range" id="reverbOutputLevel" min="0" max="100" value="5" step="1">
     </div>
+
     <div class="panelContainer" >
         <label ><h2>Waveshaper Distortion</h2></label><br><br>
         <label for="distortionAmount">Distortion Amount:</label>
         <button id="distortionAmount" onclick="distortionAmountClick()"></button><t></t>
-          <label for="overSample">Over Sample:</label>
-          <button id="overSample" onclick="overSampleClick()"></button><br><br>
-          <label for="wDistDryWet">dry/Wet:</label>
-          <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
-          <label for="wDistOutputLevel">Output level:</label>
-          <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
+        <label for="overSample">Over Sample:</label>
+        <button id="overSample" onclick="overSampleClick()"></button><br><br>
+        <label for="wDistDryWet">dry/Wet:</label>
+        <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
+        <label for="wDistOutputLevel">Output level:</label>
+        <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
     </div>
+    </div>
+
     
     <div class="panelContainer" >
         <label ><h2>Dynamic Compressor</h2></label><br><br>
@@ -96,7 +99,7 @@
     <div class="panelContainer" >
         <!--Ref: https://css-tricks.com/almanac/selectors/f/file-selector-button/-->
           <label for="audioFile">Audio File:</label>
-          <button id="audioFile" onclick="audioFileClick()"></button><br><br>
+          <button id="audioFile" onclick="audioFileClick()"></button><br><br><br>
           <label for="selectMic">Select Mic:</label>
           <button id="selectMic" onclick="selectMicClick()"></button><br><br>
          
