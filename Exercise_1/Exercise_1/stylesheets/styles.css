@@ -2,9 +2,9 @@
 
 .panelContainer {
 
-padding: 10px;
+padding: 5px;
 
-margin: 20px;
+margin: 10px;
 
 border: 1px solid gray;
 
@@ -23,6 +23,16 @@ align: center;
 .panelContainer h2 {
 
 font-size: 24px;
+padding: 0px;
+
+font-weight: bold;
+
+}
+
+.panelContainer h3 {
+
+font-size: 18px;
+padding: 0px;
 
 font-weight: bold;
 
@@ -52,6 +62,86 @@ cursor: pointer;
 
 }
 
-.volumeSlider {
-  width: 600px;
+.slider 
+{
+  -webkit-appearance: none;
+  width: 600;
+  height: 25px;
+  background: lightcyan;
+  color: #fff;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.vert_panelContainer button {
+
+background-color: #007bff;
+
+color: #fff;
+
+padding: 10px 20px;
+
+border: none;
+
+border-radius: 4px;
+
+font-size: 16px;
+
+cursor: pointer;
+
+}
+
+.vert_panelContainer {
+
+padding: 10px;
+
+margin: 20px;
+
+border: 1px solid gray;
+
+background-color: lightcyan;
+
+text-align: center;
+
+border-radius: 25px;
+
+width : 60%
+    
+align: center;
+
+}
+
+.vert_panelContainer h2 {
+
+font-size: 24px;
+
+font-weight: bold;
+
+}
+
+.vert_panelContainer p {
+
+font-size: 16px;
+
+}
+
+.myCanvas {
+
+padding: 10px;
+
+margin: 20px;
+
+border: 1px solid gray;
+
+background-color: lightcyan;
+
+text-align: center;
+
+border-radius: 25px;
+
+width : 400px;
+height: 400px;
+    
 }

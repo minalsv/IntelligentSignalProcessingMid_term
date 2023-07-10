@@ -8,27 +8,11 @@
     }
 
     function setup() {
-      createCanvas(400, 400);
+
     }
 
     function draw() {
-      background(220);
-      // Display the current state of the sound
-      if (isPlaying) {
-        fill('green');
-        text('Playing', 10, 20);
-      } else {
-        fill('red');
-        text('Paused', 10, 20);
-      }
-      if (isLooping) {
-        fill('blue');
-        text('Looping', 10, 40);
-      }
-      if (isRecording) {
-        fill('purple');
-        text('Recording', 10, 60);
-      }
+
     }
 
     function togglePlayback() {

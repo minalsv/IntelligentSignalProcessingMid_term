@@ -19,6 +19,7 @@
 <body>
     <div class="panelContainer" >
         <button id="pauseButton" onclick="pausePlayback()">Pause</button>
+        
         <button id="playButton" onclick="togglePlayback()">Play</button>
         <button id="stopButton" onclick="stopPlayback()">Stop</button>
         <button id="skipToStartButton" onclick="skipToStart()">Skip to Start</button>
@@ -28,47 +29,81 @@
     </div>
     
     <div class="panelContainer" >
-          <label >Low-pass Filter</label><br><br>
+        <h2><label for="filter">Filter:</label></h2>
+            <select id="filter" onchange="setFilterType(this.value)">
+                <option value="highpass">High-Pass</option>
+                <option value="lowpass">Low-Pass</option>
+                <option value="bandpass">Band-Pass</option>
+            </select>
+          <br><br>
           <label for="cutOffFreq">Cutoff Frequency:</label>
           <button id="cutOffFreq" onclick="cutOffFreqClick()"></button>
           <label for="resonance">Resonance:</label>
-          <button id="resonance" onclick="setResonanceClick()"></button>
+          <button id="resonance" onclick="setResonanceClick()"></button><br><br>
           <label for="dryWet">dry/Wet:</label>
           <input type="range" id="dryWet" min="0" max="100" value="5" step="1">
           <label for="outputLevel">Output level:</label>
           <input type="range" id="outputLevel" min="0" max="100" value="5" step="1">
     </div>
     <div class="panelContainer" >
-          <label >Reverb</label><br><br>
+          <label ><h2>Reverb</h2></label><br><br>
           <label for="reverbDuration">Reverb duration</label>
           <button id="reverbDuration" onclick="reverbDurationClick()"></button>
           <label for="decayRate">Decay Rate</label>
           <button id="decayRate" onclick="decayRateClick()"></button>
           <label for="reverse">Reverse</label>
-          <button id="reverse" onclick="reverseClick()"></button>
+          <button id="reverse" onclick="reverseClick()"></button><br><br>
           <label for="reverbDryWet">dry/Wet:</label>
           <input type="range" id="reverbDryWet" min="0" max="100" value="5" step="1">
           <label for="reverbOutputLevel">Output level:</label>
           <input type="range" id="reverbOutputLevel" min="0" max="100" value="5" step="1">
     </div>
     <div class="panelContainer" >
-        <label >Waveshaper Distortion</label><br><br>
-          <label for="distortionAmount">Distortion Amount:</label>
-          <button id="distortionAmount" onclick="distortionAmountClick()"></button>
+        <label ><h2>Waveshaper Distortion</h2></label><br><br>
+        <label for="distortionAmount">Distortion Amount:</label>
+        <button id="distortionAmount" onclick="distortionAmountClick()"></button><t></t>
           <label for="overSample">Over Sample:</label>
-          <button id="overSample" onclick="overSampleClick()"></button>
+          <button id="overSample" onclick="overSampleClick()"></button><br><br>
           <label for="wDistDryWet">dry/Wet:</label>
           <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
           <label for="wDistOutputLevel">Output level:</label>
           <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
     </div>
-  <canvas></canvas>
-</body>
-<footer>
+    
     <div class="panelContainer" >
-        <label for="masterVolume">Master Volume:</label>
-        <input type="range" id="volumeSlider" min="0" max="100" value="5" step="1"> 
+        <label ><h2>Dynamic Compressor</h2></label><br><br>
+        <label for="attack">Attack:</label>
+          <button id="attack" onclick="attackClick()"></button>
+          <label for="knee">Knee:</label>
+          <button id="knee" onclick="kneeClick()"></button><br><br>
+          <label for="release">Release:</label>
+          <button id="release" onclick="releaseClick()"></button><br><br>
+          <label for="wDistDryWet">dry/Wet:</label>
+          <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
+          <label for="wDistOutputLevel">Output level:</label>
+          <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
     </div>
+    <div class="row" >
+        <div class="myCanvas" text="Spectrum In"><canvas id="specturmIn"></canvas></div>
+        <div class="myCanvas"><canvas id="specturmOut"></canvas></div>
+    </div>
+    <div class="panelContainer" >
+        <label for="masterVolume"><h2>Master Volume:</h2></label>
+        <div class="slider"><input type="range" id="volumeSlider" min="0" max="100" value="5" step="1"> </div> 
+         
+    </div>
+    
+    <div class="panelContainer" >
+        <!--Ref: https://css-tricks.com/almanac/selectors/f/file-selector-button/-->
+          <label for="audioFile">Audio File:</label>
+          <button id="audioFile" onclick="audioFileClick()"></button><br><br>
+          <label for="selectMic">Select Mic:</label>
+          <button id="selectMic" onclick="selectMicClick()"></button><br><br>
+         
+    </div>
+    </body>
+<footer>
+
 </footer>
   <script>
     // Your p5.js sketch code goes here
