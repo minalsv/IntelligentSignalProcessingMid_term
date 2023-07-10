@@ -2,115 +2,119 @@
 <html>
 
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="stylesheets/styles.css">
-	<title>Exercise 1</title>
-	<script type="text/javascript" src="https://unpkg.com/rivescript@latest/dist/rivescript.min.js"></script>
-	<script
-	  src="https://code.jquery.com/jquery-3.2.1.min.js"
-	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-	  crossorigin="anonymous"></script>
-	<script src="../libraries/p5.js"></script>
-  <script src="../libraries/p5.sound.min.js"></script>
-	<script src="sketch.js"></script>
+    <title>Exercise 1</title>
+    <script type="text/javascript" src="https://unpkg.com/rivescript@latest/dist/rivescript.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="../libraries/p5.js"></script>
+    <script src="../libraries/p5.sound.min.js"></script>
+    <script src="sketch.js"></script>
 </head>
+
 <body>
-    <div class="panelContainer" >
-        <button_nav id="pauseButton" onclick="pausePlayback()">Pause</button_nav>
-        
-        <button_nav id="playButton" onclick="togglePlayback()">Play</button_nav>
-        <button_nav id="stopButton" onclick="stopPlayback()">Stop</button_nav>
-        <button_nav id="skipToStartButton" onclick="skipToStart()">Skip to Start</button_nav>
-        <button_nav id="skipToEndButton" onclick="skipToEnd()">Skip to End</button_nav>
+    <div class="panelContainer">
+        <button_nav id="pauseButton" onclick="pauseClick()">Pause</button_nav>
+
+        <button_nav id="playButton" onclick="playClick()">Play</button_nav>
+        <button_nav id="stopButton" onclick="stopClick()">Stop</button_nav>
+        <button_nav id="skipToStartButton" onclick="skipToStartClick()">Skip to Start</button_nav>
+        <button_nav id="skipToEndButton" onclick="skipToEndClick()">Skip to End</button_nav>
         <button_nav id="loopButton" onclick="toggleLoop()">Loop</button_nav>
         <button_nav id="recordButton" onclick="toggleRecording()">Record</button_nav>
     </div>
-    <div class="row" >
-    <div class="panelContainer" >
-        <h2><label for="filter">Filter:</label></h2>
-            <select id="filter" onchange="setFilterType(this.value)">
+    <div class="row">
+        <div class="panelContainer">
+            <h2><label for="selectFilter">Filter:</label></h2>
+            <select id="selectFilter" onchange="setFilterType(this.value)">
                 <option value="highpass">High-Pass</option>
                 <option value="lowpass">Low-Pass</option>
                 <option value="bandpass">Band-Pass</option>
             </select>
-          <br><br>
-          <label for="cutOffFreq">Cutoff Frequency:</label><t
-          <label for="resonance">Resonance:</label><br>
-          <button id="cutOffFreq" onclick="cutOffFreqClick()"></button>
-          <button id="resonance" onclick="setResonanceClick()"></button><br><br>
-          <label for="dryWet">dry/Wet:</label>
-          <input type="range" id="dryWet" min="0" max="100" value="5" step="1">
-          <label for="outputLevel">Output level:</label>
-          <input type="range" id="outputLevel" min="0" max="100" value="5" step="1">
-    </div>
-    <div class="panelContainer" >
-          <label ><h2>Reverb</h2></label><br><br>
-          <label for="reverbDuration">Reverb duration</label>
-          <button id="reverbDuration" onclick="reverbDurationClick()"></button>
-          <label for="decayRate">Decay Rate</label>
-          <button id="decayRate" onclick="decayRateClick()"></button>
-          <label for="reverse">Reverse</label>
-          <button id="reverse" onclick="reverseClick()"></button><br><br>
-          <label for="reverbDryWet">dry/Wet:</label>
-          <input type="range" id="reverbDryWet" min="0" max="100" value="5" step="1">
-          <label for="reverbOutputLevel">Output level:</label>
-          <input type="range" id="reverbOutputLevel" min="0" max="100" value="5" step="1">
+            <br><br>
+            <label for="cutOffFreq">Cutoff Frequency:</label>
+            <label for="resonance">Resonance:</label><br>
+            <button id="cutOffFreq" onclick="cutOffFreqClick()"></button>
+            <button id="resonance" onclick="setResonanceClick()"></button><br><br>
+            <label for="dryWet">dry/Wet:</label>
+            <input type="range" id="dryWet" min="0" max="100" value="5" step="1">
+            <label for="outputLevel">Output level:</label>
+            <input type="range" id="outputLevel" min="0" max="100" value="5" step="1">
+        </div>
+        <div class="panelContainer">
+            <label>
+                <h2>Reverb</h2>
+            </label><br><br>
+            <label for="reverbDuration">Reverb duration</label>
+            <button id="reverbDuration" onclick="reverbDurationClick()"></button>
+            <label for="decayRate">Decay Rate</label>
+            <button id="decayRate" onclick="decayRateClick()"></button>
+            <label for="reverse">Reverse</label>
+            <button id="reverse" onclick="reverseClick()"></button><br><br>
+            <label for="reverbDryWet">dry/Wet:</label>
+            <input type="range" id="reverbDryWet" min="0" max="100" value="5" step="1">
+            <label for="reverbOutputLevel">Output level:</label>
+            <input type="range" id="reverbOutputLevel" min="0" max="100" value="5" step="1">
+        </div>
+
+        <div class="panelContainer">
+            <label>
+                <h2>Waveshaper Distortion</h2>
+            </label><br><br>
+            <label for="distortionAmount">Distortion Amount:</label>
+            <button id="distortionAmount" onclick="distortionAmountClick()"></button>
+            <t></t>
+            <label for="overSample">Over Sample:</label>
+            <button id="overSample" onclick="overSampleClick()"></button><br><br>
+            <label for="wDistDryWet">dry/Wet:</label>
+            <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
+            <label for="wDistOutputLevel">Output level:</label>
+            <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
+        </div>
     </div>
 
-    <div class="panelContainer" >
-        <label ><h2>Waveshaper Distortion</h2></label><br><br>
-        <label for="distortionAmount">Distortion Amount:</label>
-        <button id="distortionAmount" onclick="distortionAmountClick()"></button><t></t>
-        <label for="overSample">Over Sample:</label>
-        <button id="overSample" onclick="overSampleClick()"></button><br><br>
+
+    <div class="panelContainer">
+        <label>
+            <h2>Dynamic Compressor</h2>
+        </label><br><br>
+        <label for="attack">Attack:</label>
+        <button id="attack" onclick="attackClick()"></button>
+        <label for="knee">Knee:</label>
+        <button id="knee" onclick="kneeClick()"></button><br><br>
+        <label for="release">Release:</label>
+        <button id="release" onclick="releaseClick()"></button><br><br>
         <label for="wDistDryWet">dry/Wet:</label>
         <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
         <label for="wDistOutputLevel">Output level:</label>
         <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
     </div>
-    </div>
-
-    
-    <div class="panelContainer" >
-        <label ><h2>Dynamic Compressor</h2></label><br><br>
-        <label for="attack">Attack:</label>
-          <button id="attack" onclick="attackClick()"></button>
-          <label for="knee">Knee:</label>
-          <button id="knee" onclick="kneeClick()"></button><br><br>
-          <label for="release">Release:</label>
-          <button id="release" onclick="releaseClick()"></button><br><br>
-          <label for="wDistDryWet">dry/Wet:</label>
-          <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
-          <label for="wDistOutputLevel">Output level:</label>
-          <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
-    </div>
-    <div class="row" >
+    <div class="row">
         <div class="myCanvas" text="Spectrum In"><canvas id="specturmIn"></canvas></div>
         <div class="myCanvas"><canvas id="specturmOut"></canvas></div>
     </div>
-    <div class="panelContainer" >
-        <label for="masterVolume"><h2>Master Volume:</h2></label>
-        <div class="slider"><input type="range" id="volumeSlider" min="0" max="100" value="5" step="1"> </div> 
-         
+    <div class="panelContainer">
+        <label for="masterVolume">
+            <h2>Master Volume:</h2>
+        </label>
+        <div class="slider"><input type="range" id="volumeSlider" min="0" max="100" value="5" step="1"> </div>
+
     </div>
-    
-    <div class="panelContainer" >
+
+    <div class="panelContainer">
         <!--Ref: https://css-tricks.com/almanac/selectors/f/file-selector-button/-->
-          <label for="audioFile">Audio File:</label>
-          <button id="audioFile" onclick="audioFileClick()"></button><br><br><br>
-          <label for="selectMic">Select Mic:</label>
-          <button id="selectMic" onclick="selectMicClick()"></button><br><br>
-         
+        <label for="audioFile">Audio File:</label>
+        <button id="audioFile" onclick="audioFileClick()"></button><br><br><br>
+        <label for="selectMic">Select Mic:</label>
+        <button id="selectMic" onclick="selectMicClick()"></button><br><br>
+
     </div>
-    </body>
+</body>
 <footer>
 
 </footer>
-  <script>
+<script>
     // Your p5.js sketch code goes here
-  </script>
-
-
-</html>
+</script></html>
