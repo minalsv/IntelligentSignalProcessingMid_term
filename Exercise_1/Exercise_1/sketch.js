@@ -1,18 +1,24 @@
+//track to be used in this app
+let trackPlayer;
+
+//track status related variables
 let isPlaying = false;
 let isLooping = false;
-let isRecording = false;
+let isRecording = false
+//canvas related variables
 let spectrumInCnv;
 let cnvElmntIn;
 let spectrumOutCnv;
 let cnvElmntOut;
+const canvsWidth = 500;
+const canvasHeight = 400;
+
 let fft;
-let trackPlayer;
 let amplitude;
 let maxAmplitude;
 let ctx;
 let trackOriginalState;
-const canvsWidth=500;
-const canvasHeight=400;
+
 /**
 It loads the resources required for the app.
 */
@@ -50,7 +56,7 @@ function setup() {
 It updates the display for the app.
 */
 function draw() {
-    
+
     //set two canvases - for the input track display and for the output track display.
     spectrumInCnv.clearRect(0, 0, cnvElmntIn.width, cnvElmntIn.height);
     spectrumOutCnv.clearRect(0, 0, cnvElmntOut.width, cnvElmntOut.height);
@@ -60,26 +66,34 @@ function draw() {
     // true - unprocessed track.
     drawSpectrum(trackOriginalState);
 
+    //display track's amplitude value in the form of the rectangle's dimension
     displayAplitudeMappedRect(spectrumInCnv);
-  
-    if(isTrackEnded(trackPlayer)){
+
+    //if the track is ended then change the flag "playing" status
+    if (isTrackEnded(trackPlayer)) {
         isPlaying = false;
     }
 }
 
-function displayAplitudeMappedRect(cnvs){
+/**Display the rectangle which has it's dimensions mapped to the audio feature amplitude 
+in the input canvas*/
+function displayAplitudeMappedRect(cnvs) {
     let ampLevel = amplitude.getLevel();
     let diameter = map(ampLevel, 0, 1, 0, 200);
     fill(0);
-    cnvs.fillRect(250, 250, diameter, diameter);    
+    cnvs.fillRect(250, 250, diameter, diameter);
 }
 
-function isTrackEnded(track){
+/**Returns the status of the input track if it's still playing or not*/
+function isTrackEnded(track) {
     if (track.isPlaying()) {
-        return false;
+        return false; //still playing
     }
-    return true;
+    return true; //track is not running
 }
+
+
+
 function calculateMaxAmplitude(track) {
     track.play();
     track.setVolume(0); // Mute the audio
@@ -110,47 +124,54 @@ function drawSpectrum(inputSpectrum) {
         let x = map(i, 0, spectrum.length, 0, cnvElmntIn.width);
         let h = -cnvElmntOut.height + map(spectrum[i], 0, 255, cnvElmntOut.height, 0);
 
-        let ampLevel = amplitude.getLevel();
-        let color = map(ampLevel, 0, 255);
+        let hue = map(i, 0, spectrum.length, 0, 360);
 
-        fill(color, color, color);
         if (inputSpectrum) {
+
+            spectrumInCnv.fillStyle = "blue";
             spectrumInCnv.fillRect(x, cnvElmntOut.height, width / spectrum.length, h);
         } else {
+            spectrumOutCnv.fillStyle = "blue"; //'rgb(hue, 255, 255)';
             spectrumOutCnv.fillRect(x, cnvElmntOut.height, width / spectrum.length, h);
         }
 
     }
 }
 
+/*Play the track  when the button is pressed.*/
 function playClick() {
     getAudioContext().resume();
     if (!isPlaying) {
         trackPlayer.play();
         isPlaying = true;
     }
-    
+
 }
 
+/*Pause the track when the button is pressed.*/
 function pauseClick() {
     trackPlayer.pause();
     isPlaying = false;
 }
 
+/*Stop the track when the button is pressed.*/
 function stopClick() {
     trackPlayer.stop();
     isPlaying = false;
 }
 
+/*Start the track from the beginning.*/
 function skipToStartClick() {
     trackPlayer.jump(0);
 }
 
+/*End the track.*/
 function skipToEndClick() {
     trackPlayer.jump(trackPlayer.duration());
     isPlaying = false;
 }
 
+/*Toggle the loop status i.e. set the track to play in loop(keep playing) or not*/
 function toggleLoop() {
     if (isLooping) {
         trackPlayer.setLoop(false);
@@ -160,11 +181,16 @@ function toggleLoop() {
     isLooping = !isLooping;
 }
 
+/*Start or Sop the recording.*/
 function toggleRecording() {
-    if (isRecording) {
-        trackPlayer.stopRecording();
-    } else {
-        trackPlayer.startRecording();
+    if (trackPlayer.isPlaying()) {
+        //allow to start/stop recording only if the track is running else just ignore.
+        if (isRecording) {
+            trackPlayer.stopRecording();
+        } else {
+            trackPlayer.startRecording();
+        }
+        isRecording = !isRecording;
     }
-    isRecording = !isRecording;
+
 }
