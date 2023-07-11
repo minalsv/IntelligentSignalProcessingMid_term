@@ -5,6 +5,7 @@ let trackPlayer;
 let isPlaying = false;
 let isLooping = false;
 let isRecording = false
+
 //canvas related variables
 let spectrumInCnv;
 let cnvElmntIn;
@@ -13,11 +14,22 @@ let cnvElmntOut;
 const canvsWidth = 500;
 const canvasHeight = 400;
 
+//filters, analyzer and all other functionality related variables.
 let fft;
 let amplitude;
 let maxAmplitude;
 let ctx;
 let trackOriginalState;
+
+let recordedAudioFile;
+let audioRecorder;
+
+//Filter variables
+let filterType = 'lowpass'; //Low, high and band pass filters.
+let cutoffFreq = 22050;
+let resonance = 10;
+let drywet = 0.5;
+let outputLevel = 0.5;
 
 /**
 It loads the resources required for the app.
@@ -49,7 +61,15 @@ function setup() {
     fft = new p5.FFT();
     amplitude = new p5.Amplitude();
 
+    //to record the audio and save it to the file
+    audioRecorder = new p5.SoundRecorder();
+    audioRecorder.setInput();
+    recordedAudioFile = new p5.SoundFile();
 
+    //get a new filter and connect it to the player
+    trackPlayer.disconnect();
+    filter = new p5.Filter(filterType);
+    trackPlayer.connect(filter);
 }
 
 /**
@@ -187,10 +207,47 @@ function toggleRecording() {
         //allow to start/stop recording only if the track is running else just ignore.
         if (isRecording) {
             trackPlayer.stopRecording();
+            audioRecorder.stop();
+            saveRecording(recordedAudioFile);
+            isRecording = false;
         } else {
             trackPlayer.startRecording();
+            audioRecorder.record(recordedAudioFile);
+            isRecording = true;
+
         }
-        isRecording = !isRecording;
     }
 
+}
+
+/*Save the recording to a pre-defined file but in future, ask user to enter the file name*/
+function saveRecording(recordedAudioFile) {
+    if (recordedAudioFile && !isRecording) {
+        saveSound(recordedAudioFile, 'recording.wav');
+    }
+}
+
+/*Sets the type of the filter */
+function setFilterType(type) {
+    filter.setType(type);
+    filterType = type;
+}
+
+/*On cutoff click, set the cut off freq from 10 to 22050 and every click increase it by 1000 */
+function cutOffFreqClick() {
+    if (cutoffFreq >= 22050) {
+        cutoffFreq = 10;
+    } else {
+        cutoffFreq = cutoffFreq + 1000;
+    }
+}
+
+
+/*On res click, set the resonance from 0.001 to 1000 and every click increase it by 10 */
+function setResonanceClick() {
+    if (resonance >= 1000) {
+        resonance = 0.001;
+    } else {
+        resonance = resonance + 10;
+    }
 }
