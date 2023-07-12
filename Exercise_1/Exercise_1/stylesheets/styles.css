@@ -81,7 +81,7 @@
 
     cursor: pointer;
 
-    width: 50px;
+    width: 150px;
     height: 50px;
     opacity: 0.6;
     filter: alpha(opacity=90);
@@ -143,3 +143,112 @@
     background-position-x: 100%;
     transform: scale(1.1);
 }
+
+button{
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 0 8px rgb(207, 207, 207);
+}
+
+button:hover{
+  border: none;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: inset 0 0 8px #f9f8fc;
+  } 
+
+ /*
+#foot{
+  position: relative;
+  top: 15px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border: none;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 8px #d9d4e7;
+  width: 200px;
+  height: 65px;
+  background-color: #d9d4e7;
+  animation-duration: 5s;
+}*/
+
+.panelContainer * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.panelContainer body {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panelContainer button{
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 0 8px rgb(207, 207, 207);
+}
+
+.panelContainer button:hover{
+  border: none;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: inset 0 0 8px #f9f8fc;
+  } 
+
+#foot{
+  position: relative;
+  top: 15px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border: none;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 8px #d9d4e7;
+  width: 200px;
+  height: 65px;
+  background-color: #d9d4e7;
+  animation-duration: 5s;
+}
+
+.panelContainer button-os{
+   position: absolute;
+    width: 200px;
+    height: 65px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: #f9f8fc;
+    border: 2.5px solid #0e172c;
+    transition: background-color 2.2s;
+    transition-duration: 3s;
+    transition: 1.5s;
+  }
+  
+ .panelContainer button-os:hover{
+    position: absolute;
+    top: 30px;
+    background-color: #fec7d7;
+  }
+  
+  .panelContainer button-os a{
+    font-size: 20px;
+    display: block;
+    text-decoration: none;
+    color:#0e172c;
+    transition: 1.5s;
+  }
+  
+  .panelContainer button-os a:hover{
+    letter-spacing: 5px;
+  }

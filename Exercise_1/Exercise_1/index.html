@@ -34,10 +34,8 @@
                 <option value="bandpass">Band-Pass</option>
             </select>
             <br><br>
-            <label for="cutOffFreq">Cutoff Frequency:</label>
-            <label for="resonance">Resonance:</label><br>
-            <button id="cutOffFreq" onclick="cutOffFreqClick()"></button>
-            <button id="resonance" onclick="setResonanceClick()"></button><br><br>
+            <button id="cutOffFreq" onclick="cutOffFreqClick()">Cutoff Frequency</button>
+            <button id="resonance" onclick="setResonanceClick()">Resonance</button><br><br>
             <label for="filterDryWet">dry/Wet:</label>
             <input type="range" id="filterDryWet" min="0.0" max="1.0" value="0.5" step="0.1">
             <label for="filterOutputLevel">Output level:</label>
@@ -47,12 +45,9 @@
             <label>
                 <h2>Reverb</h2>
             </label><br><br>
-            <label for="reverbDuration">Reverb duration</label>
-            <button id="reverbDuration" onclick="reverbDurationClick()"></button>
-            <label for="decayRate">Decay Rate</label>
-            <button id="decayRate" onclick="decayRateClick()"></button>
-            <label for="reverse">Reverse</label>
-            <button id="reverse" onclick="reverseClick()"></button><br><br>
+            <button id="reverbDuration" onclick="reverbDurationClick()">Reverb duration</button>
+            <button id="decayRate" onclick="decayRateClick()">Decay Rate</button>
+            <button id="reverse" onclick="reverseClick()">Reverse</button><br><br>
             <label for="reverbDryWet">dry/Wet:</label>
             <input type="range" id="reverbDryWet" min="0" max="100" value="5" step="1">
             <label for="reverbOutputLevel">Output level:</label>
@@ -63,34 +58,31 @@
             <label>
                 <h2>Waveshaper Distortion</h2>
             </label><br><br>
-            <label for="distortionAmount">Distortion Amount:</label>
-            <button id="distortionAmount" onclick="distortionAmountClick()"></button>
+            <button id="distortionAmount" onclick="distortionAmountClick()">Distortion Amount</button>
             <t></t>
-            <label for="overSample">Over Sample:</label>
-            <button id="overSample" onclick="overSampleClick()"></button><br><br>
+            <button id="overSample" onclick="overSampleClick()">Over Sample</button><br><br>
             <label for="wDistDryWet">dry/Wet:</label>
             <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
             <label for="wDistOutputLevel">Output level:</label>
             <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
         </div>
+
+        <div class="panelContainer">
+            <label>
+                <h2>Dynamic Compressor</h2>
+            </label><br><br>
+            <button id="attack" onclick="attackClick()">Attack</button>
+            <button id="knee" onclick="kneeClick()">Knee</button><br><br>
+            <button id="release" onclick="releaseClick()">Release</button><br><br>
+            <button id="ratio" onclick="ratioClick()">Ratio</button>
+            <button id="threshold" onclick="thresholdClick()">Threshold</button><br><br>
+            <label for="dComprDryWet">dry/Wet:</label>
+            <input type="range" id="dComprDryWet" min="0" max="100" value="5" step="1">
+            <label for="dComprDistOutputLevel">Output level:</label>
+            <input type="range" id="dComprDistOutputLevel" min="0" max="100" value="5" step="1">
+        </div>
     </div>
 
-
-    <div class="panelContainer">
-        <label>
-            <h2>Dynamic Compressor</h2>
-        </label><br><br>
-        <label for="attack">Attack:</label>
-        <button id="attack" onclick="attackClick()"></button>
-        <label for="knee">Knee:</label>
-        <button id="knee" onclick="kneeClick()"></button><br><br>
-        <label for="release">Release:</label>
-        <button id="release" onclick="releaseClick()"></button><br><br>
-        <label for="wDistDryWet">dry/Wet:</label>
-        <input type="range" id="wDistDryWet" min="0" max="100" value="5" step="1">
-        <label for="wDistOutputLevel">Output level:</label>
-        <input type="range" id="wDistOutputLevel" min="0" max="100" value="5" step="1">
-    </div>
     <div class="row">
         <div class="myCanvas" text="Spectrum In"><canvas id="specturmIn"></canvas></div>
         <div class="myCanvas"><canvas id="specturmOut"></canvas></div>
@@ -99,7 +91,7 @@
         <label for="masterVolume">
             <h2>Master Volume:</h2>
         </label>
-        <div class="slider"><input type="range" id="volumeSlider" min="0" max="100" value="5" step="1"> </div>
+        <div class="slider"><input type="range" id="masterVolume" min="0" max="100" value="5" step="1"> </div>
 
     </div>
 
@@ -117,4 +109,7 @@
 </footer>
 <script>
     // Your p5.js sketch code goes here
-</script></html>
+
+</script>
+
+</html>

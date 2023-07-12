@@ -53,6 +53,18 @@ let reverbOutputLevelSlider;
 let masterVolume = 1;
 let masterVolumeSlider;
 
+/*Dynamic compressor*/
+let appDynamicCompressor;
+let dComprDryWetSlider;
+let dynamicCompData = {
+    attack: 0.003,
+    knee: 30,
+    release: 0.25,
+    ratio: 12,
+    threshold: 0,
+    dryWet: 0,
+    outputLevel: 0
+};
 
 /*-------------------------------Implementation-----------------------------------------*/
 /**
@@ -91,8 +103,97 @@ function setup() {
 
     initializeReverb();
 
+    initializeDynamicCompressorControls();
+
     initializeMasterVolume();
 
+}
+
+
+
+function distortionAmountClick() {
+
+}
+
+function overSampleClick() {}
+
+function wDistDryWetSlider() {}
+
+function wDistOutputLevelSlider() {}
+
+function initializeDynamicCompressorControls() {
+
+    appDynamicCompressor = new p5.Compressor();
+
+    dComprDryWetSlider = document.getElementById('dComprDryWet');
+    // Attach an event listener to the filter slider
+    dComprDryWetSlider.addEventListener('change', dComprDryWetChanged);
+
+    dComprDistOutputLevelSlider = document.getElementById('dComprDistOutputLevel');
+    // Attach an event listener to the filter slider
+    dComprDistOutputLevelSlider.addEventListener('change', dComprDistOutputLevelChanged);
+}
+
+function attackClick() {
+    if (dynamicCompData.attack >= 1.0) {
+        dynamicCompData.attack = 0.0;
+    } else {
+        dynamicCompData.attack = dynamicCompData.attack + 0.1;
+    }
+    appDynamicCompressor.attack(dynamicCompData.attack);
+}
+
+function kneeClick() {
+    if (dynamicCompData.knee >= 40) {
+        dynamicCompData.knee = 0;
+    } else {
+        dynamicCompData.knee = dynamicCompData.knee + 2;
+    }
+    appDynamicCompressor.knee(dynamicCompData.knee);
+
+}
+
+function releaseClick() {
+    if (dynamicCompData.release >= 1) {
+        dynamicCompData.release = 0;
+    } else {
+        dynamicCompData.release = dynamicCompData.release + 0.1;
+    }
+    appDynamicCompressor.release(dynamicCompData.release);
+
+}
+
+function ratioClick() {
+    if (dynamicCompData.ratio >= 20) {
+        dynamicCompData.ratio = 1;
+    } else {
+        dynamicCompData.ratio = dynamicCompData.ratio + 1;
+    }
+
+    appDynamicCompressor.ratio(dynamicCompData.ratio);
+}
+
+function thresholdClick() {
+    if (dynamicCompData.threshold <= -100) {
+        dynamicCompData.threshold = 0;
+    } else if (dynamicCompData.threshold >= 0) {
+        dynamicCompData.threshold = -100;
+    } else {
+        dynamicCompData.threshold = dynamicCompData.threshold + 10;
+    }
+
+    appDynamicCompressor.threshold(dynamicCompData.threshold);
+
+}
+
+function dComprDryWetChanged() {
+    dynamicCompData.dryWet = dComprDryWetSlider.value;
+    appDynamicCompressor.drywet(dynamicCompData.dryWet);
+}
+
+function dComprDistOutputLevelSlider() {
+    dynamicCompData.outputLevel = dComprDistOutputLevelSlider.value;
+    appDynamicCompressor.amp(dynamicCompData.outputLevel);
 }
 
 /*Initializes all the canvas related elements*/
@@ -238,7 +339,10 @@ function displayAplitudeMappedRect(cnvs) {
     let ampLevel = amplitude.getLevel();
     let diameter = map(ampLevel, 0, 1, 0, 200);
     fill(0);
-    cnvs.fillRect(250, 250, diameter, diameter);
+    let xPos = 350;
+    let yPos = 50;
+
+    cnvs.fillRect(xPos, yPos, diameter, diameter);
 }
 
 /**Returns the status of the input track if it's still playing or not*/
