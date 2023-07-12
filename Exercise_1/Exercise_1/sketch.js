@@ -50,6 +50,7 @@ let reverbDrywetSlider;
 let reverbOutputLevelSlider;
 
 /*Master volume*/
+let appMasterVolume;
 let masterVolume = 1;
 let masterVolumeSlider;
 
@@ -116,6 +117,9 @@ function setup() {
     initializeDynamicCompressorControls();
 
     initializeMasterVolume();
+    
+    /*Connect the chain*/
+    connectAllEffectsAsAChain();
 
 }
 
@@ -265,6 +269,9 @@ function initializeFilter() {
 
 /*Initializes MAster volume controls*/
 function initializeMasterVolume() {
+    appMasterVolume = new p5.Gain();
+    masterVolume.amp(masterVolume);
+    
     masterVolumeSlider = document.getElementById('masterVolume');
     // Attach an event listener to the filter slider
     masterVolumeSlider.addEventListener('change', masterVolumeChanged);
@@ -286,21 +293,37 @@ function initializeReverb() {
 function masterVolumeChanged() {
     masterVolume = masterVolumeSlider.value;
     masterVolume = map(masterVolume, 0, 100, 0, 1);
-    trackPlayer.setVolume(masterVolume);
+    masterVolume.amp(masterVolume);
 }
 
 
 /*It directs the signal flow */
 function connectAllEffectsAsAChain() {
     /*sound file/audio signal->filter->WaveshaperDistortion->DynamicCompressor->Reverb->MasterVolume->Speaker */
-    trackPlayer.connect();
     trackPlayer.disconnect();
     trackPlayer.connect(appFilter);
 
+    // Connect the freq. filter to the waveshaper distortion
+    appFilter.disconnect();
+    appFilter.connect(appWvShprDstortr);
+
+    // Connect the distortion to the compressor
+    appWvShprDstortr.disconnect();
+    appWvShprDstortr.connect(appDynamicCompressor);
+
+    // Connect the compressor to the reverb
+    appDynamicCompressor.disconnect();
+    appDynamicCompressor.connect(appReverb);
+
+    // Connect the reverb to the master volume
+    appReverb.disconnect();
+    appReverb.connect(masterVolume);
+
+    // Connect the master volume to the output
+    masterVolume.disconnect();
+    masterVolume.connect();
 
 
-    appfilter.connect(appReverb);
-    appReverb.process();
 }
 
 /*On change in dry/wet reverb value this event gets called and then updates the reverb value.*/
