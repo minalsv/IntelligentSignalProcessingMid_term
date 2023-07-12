@@ -1,3 +1,8 @@
+/*The goal of this code is to demonstrate the audio signal processing using p5.js 
+It has implemented various filters and displayed the effects of it in the form of an FFT spectrum.
+
+All the default values and min-max limits are taken from the p5.js library documentation
+e.g. Ref: https://p5js.org/reference/#/p5.Compressor/attack*/
 /*------------------Variables and data -----------------------------*/
 //track to be used in this app
 let trackPlayer;
@@ -492,6 +497,7 @@ function isTrackEnded(track) {
 function getNormalisedFactor(track) {
     track.play();
     track.setVolume(1);
+    
     let maxs = track.getPeaks();
     let maxPeak = Math.max(maxs);
     let normFactor = 1 / maxPeak;
