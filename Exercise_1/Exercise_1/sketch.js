@@ -71,16 +71,8 @@ function setup() {
     trackPlayer.connect();
     trackPlayer.pause();
 
-    cnvElmntIn = document.getElementById('specturmIn');
-    spectrumInCnv = cnvElmntIn.getContext('2d');
-    cnvElmntIn.width = canvsWidth;
-    cnvElmntIn.height = canvasHeight;
 
-    cnvElmntOut = document.getElementById('specturmOut');
-    spectrumOutCnv = cnvElmntOut.getContext('2d');
-    cnvElmntOut.width = canvsWidth;
-    cnvElmntOut.height = canvasHeight;
-
+    initializeCanvases();
 
     fft = new p5.FFT();
     amplitude = new p5.Amplitude();
@@ -92,6 +84,32 @@ function setup() {
 
     //get a new filter and connect it to the player
     trackPlayer.disconnect();
+
+    initializeFilter();
+
+    trackPlayer.connect(appFilter);
+
+    initializeReverb();
+
+    initializeMasterVolume();
+
+}
+
+/*Initializes all the canvas related elements*/
+function initializeCanvases() {
+    cnvElmntIn = document.getElementById('specturmIn');
+    spectrumInCnv = cnvElmntIn.getContext('2d');
+    cnvElmntIn.width = canvsWidth;
+    cnvElmntIn.height = canvasHeight;
+
+    cnvElmntOut = document.getElementById('specturmOut');
+    spectrumOutCnv = cnvElmntOut.getContext('2d');
+    cnvElmntOut.width = canvsWidth;
+    cnvElmntOut.height = canvasHeight;
+}
+
+/*Initializes all the filter related elements*/
+function initializeFilter() {
     appFilter = new p5.Filter(filterData.filterType);
     filterDrywetSlider = document.getElementById('filterDryWet');
     // Attach an event listener to the filter slider
@@ -101,11 +119,17 @@ function setup() {
     filterOutputLevelSlider = document.getElementById('filterOutputLevel');
     // Attach an event listener to the filter slider
     filterOutputLevelSlider.addEventListener('change', filterOutputLevelSliderChanged);
+}
 
+/*Initializes MAster volume controls*/
+function initializeMasterVolume() {
+    masterVolumeSlider = document.getElementById('masterVolume');
+    // Attach an event listener to the filter slider
+    masterVolumeSlider.addEventListener('change', masterVolumeChanged);
+}
 
-    trackPlayer.connect(appFilter);
-
-
+/*Initializes Reverbe controls*/
+function initializeReverb() {
     appReverb = new p5.Reverb();
     reverbDrywetSlider = document.getElementById('reverbDryWet');
     // Attach an event listener to the filter slider
@@ -115,14 +139,7 @@ function setup() {
     reverbOutputLevelSlider = document.getElementById('reverbOutputLevel');
     // Attach an event listener to the filter slider
     reverbOutputLevelSlider.addEventListener('change', reverbOutputLevelSliderChanged);
-
-    masterVolumeSlider = document.getElementById('masterVolume');
-    // Attach an event listener to the filter slider
-    masterVolumeSlider.addEventListener('change', masterVolumeChanged);
-
 }
-
-
 
 function masterVolumeChanged() {
     masterVolume = masterVolumeSlider.value;
