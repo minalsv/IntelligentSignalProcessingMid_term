@@ -1,3 +1,4 @@
+/*------------------Variables and data -----------------------------*/
 //track to be used in this app
 let trackPlayer;
 
@@ -48,6 +49,12 @@ var reverbData = {
 let reverbDrywetSlider;
 let reverbOutputLevelSlider;
 
+/*Master volume*/
+let masterVolume = 1;
+let masterVolumeSlider;
+
+
+/*-------------------------------Implementation-----------------------------------------*/
 /**
 It loads the resources required for the app.
 */
@@ -109,8 +116,20 @@ function setup() {
     // Attach an event listener to the filter slider
     reverbOutputLevelSlider.addEventListener('change', reverbOutputLevelSliderChanged);
 
+    masterVolumeSlider = document.getElementById('masterVolume');
+    // Attach an event listener to the filter slider
+    masterVolumeSlider.addEventListener('change', masterVolumeChanged);
 
 }
+
+
+
+function masterVolumeChanged() {
+    masterVolume = masterVolumeSlider.value;
+    masterVolume = map(masterVolume, 0, 100, 0, 1);
+    trackPlayer.setVolume(masterVolume);
+}
+
 
 /*It directs the signal flow */
 function connectAllEffectsAsAChain() {
