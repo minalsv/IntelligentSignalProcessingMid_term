@@ -66,6 +66,16 @@ let dynamicCompData = {
     outputLevel: 0
 };
 
+/*Waveshaper distortion*/
+let appWvShprDstortr;
+let wvShprDstortrData = {
+    distorionAmount: 0,
+    oversample: 0,
+    dryWet: 0,
+    outputLevel: 0
+};
+let wvShprDstortrDryWetSlider;
+let wvShprDstortrOutputLevelSlider;
 /*-------------------------------Implementation-----------------------------------------*/
 /**
 It loads the resources required for the app.
@@ -109,17 +119,48 @@ function setup() {
 
 }
 
+function initializeWaveshaperDistortion() {
 
+
+    appWvShprDstortr = new p5.Distortion();
+
+    wvShprDstortrDryWetSlider = document.getElementById('wDistDryWet');
+    // Attach an event listener to the filter slider
+    wvShprDstortrDryWetSlider.addEventListener('change', wvShprDstortrDryWetChanged);
+
+    wvShprDstortrOutputLevelSlider = document.getElementById('wDistOutputLevel');
+    // Attach an event listener to the filter slider
+    wvShprDstortrOutputLevelSlider.addEventListener('change', wvShprDstortrOutputLevelChanged);
+}
 
 function distortionAmountClick() {
+    if (wvShprDstortrData.distorionAmount >= 1.0) {
+        wvShprDstortrData.distorionAmount = 0.0;
+    } else {
+        wvShprDstortrData.distorionAmount = wvShprDstortrData.distorionAmount + 0.1;
+    }
+    appWvShprDstortr.amount(wvShprDstortrData.distorionAmount);
 
 }
 
-function overSampleClick() {}
+function overSampleClick() {
+    if (wvShprDstortrData.oversample >= 1.0) {
+        wvShprDstortrData.oversample = 0.0;
+    } else {
+        wvShprDstortrData.oversample = wvShprDstortrData.oversample + 0.1;
+    }
+    appWvShprDstortr.oversample(wvShprDstortrData.oversample);
+}
 
-function wDistDryWetSlider() {}
+function wvShprDstortrDryWetChanged() {
+    wvShprDstortrData.dryWet = wvShprDstortrDryWetSlider.value;
+    wvShprDstortrData.drywet(wvShprDstortrData.dryWet);
+}
 
-function wDistOutputLevelSlider() {}
+function wvShprDstortrOutputLevelChanged() {
+    wvShprDstortrData.outputLevel = wvShprDstortrOutputLevelSlider.value;
+    wvShprDstortrData.outputLevel(wvShprDstortrData.outputLevel);
+}
 
 function initializeDynamicCompressorControls() {
 
