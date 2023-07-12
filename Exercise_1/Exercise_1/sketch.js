@@ -26,14 +26,27 @@ let audioRecorder;
 
 //Filter variables
 let appFilter;
-let filterType = 'lowpass'; //Low, high and band pass filters.
-let cutoffFreq = 22050;
-let resonance = 10;
-let drywet = 0.5;
-let outputLevel = 0.5;
+var filterData = {
+    filterType: 'lowpass',
+    cutoffFreq: 22050,
+    resonance: 10,
+    drywet: 0.5,
+    outputLevel: 0.5
+};
 let filterDrywetSlider;
 let filterOutputLevelSlider;
 
+//Reverb 
+let appReverb;
+var reverbData = {
+    duration: 3,
+    decayRate: 2,
+    reverseStatus: 0,
+    drywet: 0.5,
+    outputLevel: 0.5
+};
+let reverbDrywetSlider;
+let reverbOutputLevelSlider;
 
 /**
 It loads the resources required for the app.
@@ -72,31 +85,92 @@ function setup() {
 
     //get a new filter and connect it to the player
     trackPlayer.disconnect();
-    appFilter = new p5.Filter(filterType);
+    appFilter = new p5.Filter(filterData.filterType);
     filterDrywetSlider = document.getElementById('filterDryWet');
     // Attach an event listener to the filter slider
     filterDrywetSlider.addEventListener('change', filterDrywetSliderChanged);
-    
+
 
     filterOutputLevelSlider = document.getElementById('filterOutputLevel');
     // Attach an event listener to the filter slider
     filterOutputLevelSlider.addEventListener('change', filterOutputLevelSliderChanged);
 
-    
+
     trackPlayer.connect(appFilter);
 
+
+    appReverb = new p5.Reverb();
+    reverbDrywetSlider = document.getElementById('reverbDryWet');
+    // Attach an event listener to the filter slider
+    reverbDrywetSlider.addEventListener('change', reverbDrywetSliderChanged);
+
+
+    reverbOutputLevelSlider = document.getElementById('reverbOutputLevel');
+    // Attach an event listener to the filter slider
+    reverbOutputLevelSlider.addEventListener('change', reverbOutputLevelSliderChanged);
+
+
+}
+
+/*It directs the signal flow */
+function connectAllEffectsAsAChain() {
+    /*sound file/audio signal->filter->WaveshaperDistortion->DynamicCompressor->Reverb->MasterVolume->Speaker */
+    trackPlayer.connect();
+    trackPlayer.disconnect();
+    trackPlayer.connect(appFilter);
+
+
+
+    appfilter.connect(appReverb);
+    appReverb.process();
+}
+
+/*On change in dry/wet reverb value this event gets called and then updates the reverb value.*/
+function reverbOutputLevelSliderChanged() {
+    reverbData.outputLevel = reverbOutputLevelSlider.value;
+    appReverb.setVolume(reverbData.outputLevel);
+}
+
+/*On change in dry/wet filter value this event gets called and then updates the filter value.*/
+function reverbDrywetSliderChanged() {
+    reverbData.drywet = reverbDrywetSlider.value;
+    appReverb.drywet(reverbData.drywet);
+}
+
+function reverbDurationClick() {
+    if (reverbData.duration >= 10) {
+        reverbData.duration = 0;
+    } else {
+        reverbData.duration = reverbData.duration + 1;
+    }
+    appReverb.set(reverbData.duration, reverbData.decayRate, reverbData.reverseStatus); //set the new duration  
+}
+
+function decayRateClick() {
+    if (reverbData.decayRate >= 100) {
+        reverbData.decayRate = 0;
+    } else {
+        reverbData.decayRate = reverbData.decayRate + 10;
+    }
+
+    appReverb.set(reverbData.duration, reverbData.decayRate, reverbData.reverseStatus); //set the new decayrate  
+}
+
+function reverseClick() {
+    reverbData.reverseStatus = !reverbData.reverseStatus; //Toggle
+    appReverb.set(reverbData.duration, reverbData.decayRate, reverbData.reverseStatus); //set the new reverse value
 }
 
 /*On change in dry/wet filter value this event gets called and then updates the filter value.*/
 function filterOutputLevelSliderChanged() {
-    outputLevel = filterOutputLevelSlider.value();
-    appFilter.setVolume(outputLevel);
+    filterData.outputLevel = filterOutputLevelSlider.value;
+    appFilter.setVolume(filterData.outputLevel);
 }
 
 /*On change in dry/wet filter value this event gets called and then updates the filter value.*/
 function filterDrywetSliderChanged() {
-    drywet = filterDrywetSlider.value();
-    appFilter.drywet(drywet);
+    filterData.drywet = filterDrywetSlider.value;
+    appFilter.drywet(filterData.drywet);
 }
 
 /**
@@ -257,28 +331,28 @@ function saveRecording(recordedAudioFile) {
 /*Sets the type of the filter */
 function setFilterType(type) {
     appFilter.setType(type); //set type as low-pass, high-pass or bandwidth filter.
-    filterType = type;
+    filterData.filterType = type;
 }
 
 /*On cutoff click, set the cut off freq from 10 to 22050 and every click increase it by 1000 */
 function cutOffFreqClick() {
-    if (cutoffFreq >= 22050) {
-        cutoffFreq = 10;
+    if (filterData.cutoffFreq >= 22050) {
+        filterData.cutoffFreq = 10;
     } else {
-        cutoffFreq = cutoffFreq + 1000;
+        filterData.cutoffFreq = cutoffFreq + 1000;
     }
-    appFilter.freq(cutoffFreq);
+    appFilter.freq(filterData.cutoffFreq);
 }
 
 
 /*On res click, set the resonance from 0.001 to 1000 and every click increase it by 10 */
 function setResonanceClick() {
-    if (resonance >= 1000) {
-        resonance = 0.001;
+    if (filterData.resonance >= 1000) {
+        filterData.resonance = 0.001;
     } else {
-        resonance = resonance + 10;
+        filterData.resonance = filterData.resonance + 10;
     }
-    appFilter.res(resonance); //set the new resonance
+    appFilter.res(filterData.resonance); //set the new resonance
 }
 
 function filterDrywetSliderChanged() {

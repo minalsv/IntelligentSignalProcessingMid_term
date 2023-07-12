@@ -29,8 +29,8 @@
         <div class="panelContainer">
             <h2><label for="selectFilter">Filter:</label></h2>
             <select id="selectFilter" onchange="setFilterType(this.value)">
-                <option value="highpass">High-Pass</option>
                 <option value="lowpass">Low-Pass</option>
+                <option value="highpass">High-Pass</option>
                 <option value="bandpass">Band-Pass</option>
             </select>
             <br><br>
@@ -39,9 +39,9 @@
             <button id="cutOffFreq" onclick="cutOffFreqClick()"></button>
             <button id="resonance" onclick="setResonanceClick()"></button><br><br>
             <label for="filterDryWet">dry/Wet:</label>
-            <input type="range" id="filterDryWet" min="0.0" max="1.0" value=".5" step="0.1">
+            <input type="range" id="filterDryWet" min="0.0" max="1.0" value="0.5" step="0.1">
             <label for="filterOutputLevel">Output level:</label>
-            <input type="range" id="filterOutputLevel" min="0.0" max="1.0" value=".5" step="0.1">
+            <input type="range" id="filterOutputLevel" min="0.0" max="1.0" value="0.5" step="0.1">
         </div>
         <div class="panelContainer">
             <label>
