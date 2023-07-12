@@ -12,11 +12,13 @@ let spectrumInCnv;
 let cnvElmntIn;
 let spectrumOutCnv;
 let cnvElmntOut;
-const canvsWidth = 500;
+const canvsWidth = 400;
 const canvasHeight = 400;
 
 //filters, analyzer and all other functionality related variables.
-let fft;
+let fftIn;
+let fftOut;
+
 let amplitude;
 let maxAmplitude;
 let ctx;
@@ -57,6 +59,7 @@ let masterVolumeSlider;
 /*Dynamic compressor*/
 let appDynamicCompressor;
 let dComprDryWetSlider;
+let dComprDistOutputLevelSlider;
 let dynamicCompData = {
     attack: 0.003,
     knee: 30,
@@ -71,7 +74,7 @@ let dynamicCompData = {
 let appWvShprDstortr;
 let wvShprDstortrData = {
     distorionAmount: 0,
-    oversample: 0,
+    oversample: 'none',
     dryWet: 0,
     outputLevel: 0
 };
@@ -97,7 +100,10 @@ function setup() {
 
     initializeCanvases();
 
-    fft = new p5.FFT();
+    /*Need two ffts to show input file spectrum vs output file spectrum*/
+    fftIn = new p5.FFT();
+    fftOut = new p5.FFT();
+
     amplitude = new p5.Amplitude();
 
     //to record the audio and save it to the file
@@ -110,17 +116,108 @@ function setup() {
 
     initializeFilter();
 
-    trackPlayer.connect(appFilter);
-
-    initializeReverb();
+    initializeWaveshaperDistortion();
 
     initializeDynamicCompressorControls();
 
+    initializeReverb();
+
     initializeMasterVolume();
-    
+
+    trackPlayer.connect(appFilter);
+
     /*Connect the chain*/
     connectAllEffectsAsAChain();
 
+}
+
+/**
+It updates the display for the app.
+*/
+function draw() {
+
+    //set two canvases - for the input track display and for the output track display.
+    spectrumInCnv.clearRect(0, 0, cnvElmntIn.width, cnvElmntIn.height);
+    spectrumOutCnv.clearRect(0, 0, cnvElmntOut.width, cnvElmntOut.height);
+
+
+    //display track's amplitude value in the form of the rectangle's dimension
+    displayAplitudeMappedRect(spectrumInCnv);
+
+    //if the track is ended then change the flag "playing" status
+    if (isTrackEnded(trackPlayer)) {
+        isPlaying = false;
+    }
+
+    // Display the fft spectrum of the current track based on the status of the track
+    //i.e. unprocessed track - spectrum In and processed track - spectrum out
+
+    let spectrumInput = fftIn.analyze();
+
+    // Display the input spectrum
+    drawSpectrum(spectrumInCnv, spectrumInput, cnvElmntIn);
+
+
+    // Analyze the filtered audio with FFT
+    let spectrumOutput = fftOut.analyze(appFilter);
+
+    // Display the output spectrum
+    drawSpectrum(spectrumOutCnv, spectrumOutput,cnvElmntOut);
+
+}
+
+/*Reset all filters by setting all parameters to their default values.*/
+function resetToDefault() {
+    filterData = {
+        filterType: 'lowpass',
+        cutoffFreq: 22050,
+        resonance: 10,
+        drywet: 0.5,
+        outputLevel: 0.5
+    };
+
+    filterDrywetSlider.value = 0.5;
+    filterOutputLevelSlider.value = 0.5;
+    appFilter.setType(filterData.filterType);
+    appFilter.set(filterData.cutoffFreq, filterData.resonance);
+
+
+
+    reverbData = {
+        duration: 3,
+        decayRate: 2,
+        reverseStatus: 0,
+        drywet: 0.5,
+        outputLevel: 0.5
+    };
+    reverbDrywetSlider.value = 0.5;
+    reverbOutputLevelSlider.value = 0.5;
+    appReverb.set(reverbData.duration, reverbData.decayRate, reverbData.reverseStatus)
+
+    dynamicCompData = {
+        attack: 0.003,
+        knee: 30,
+        release: 0.25,
+        ratio: 12,
+        threshold: 0,
+        dryWet: 0,
+        outputLevel: 0
+    };
+
+    dComprDryWetSlider.value = 0.5;
+    dComprDistOutputLevelSlider.value = 0.5;
+    appDynamicCompressor.set(dynamicCompData.attack, dynamicCompData.knee, dynamicCompData.ratio, dynamicCompData.threshold, dynamicCompData.release)
+
+
+    wvShprDstortrData = {
+        distorionAmount: 0.25,
+        oversample: 'none',
+        dryWet: 0,
+        outputLevel: 0
+    };
+    wvShprDstortrDryWetSlider.value = 0.5;
+    wvShprDstortrOutputLevelSlider.value = 0.5;
+    appWvShprDstortr.set(wvShprDstortrData.amount, wvShprDstortrData.oversample);
 }
 
 function initializeWaveshaperDistortion() {
@@ -148,10 +245,12 @@ function distortionAmountClick() {
 }
 
 function overSampleClick() {
-    if (wvShprDstortrData.oversample >= 1.0) {
-        wvShprDstortrData.oversample = 0.0;
+    if (wvShprDstortrData.oversample == 'none') {
+        wvShprDstortrData.oversample = '2X';
+    } else if (wvShprDstortrData.oversample == '2x') {
+        wvShprDstortrData.oversample = '4X';
     } else {
-        wvShprDstortrData.oversample = wvShprDstortrData.oversample + 0.1;
+        wvShprDstortrData.oversample = 'none';
     }
     appWvShprDstortr.oversample(wvShprDstortrData.oversample);
 }
@@ -236,7 +335,7 @@ function dComprDryWetChanged() {
     appDynamicCompressor.drywet(dynamicCompData.dryWet);
 }
 
-function dComprDistOutputLevelSlider() {
+function dComprDistOutputLevelChanged() {
     dynamicCompData.outputLevel = dComprDistOutputLevelSlider.value;
     appDynamicCompressor.amp(dynamicCompData.outputLevel);
 }
@@ -270,8 +369,8 @@ function initializeFilter() {
 /*Initializes MAster volume controls*/
 function initializeMasterVolume() {
     appMasterVolume = new p5.Gain();
-    masterVolume.amp(masterVolume);
-    
+    appMasterVolume.amp(masterVolume);
+
     masterVolumeSlider = document.getElementById('masterVolume');
     // Attach an event listener to the filter slider
     masterVolumeSlider.addEventListener('change', masterVolumeChanged);
@@ -293,36 +392,28 @@ function initializeReverb() {
 function masterVolumeChanged() {
     masterVolume = masterVolumeSlider.value;
     masterVolume = map(masterVolume, 0, 100, 0, 1);
-    masterVolume.amp(masterVolume);
+    appMasterVolume.amp(masterVolume);
 }
 
 
 /*It directs the signal flow */
 function connectAllEffectsAsAChain() {
     /*sound file/audio signal->filter->WaveshaperDistortion->DynamicCompressor->Reverb->MasterVolume->Speaker */
+
     trackPlayer.disconnect();
+
+    fftIn.setInput(trackPlayer);
+
     trackPlayer.connect(appFilter);
 
-    // Connect the freq. filter to the waveshaper distortion
-    appFilter.disconnect();
-    appFilter.connect(appWvShprDstortr);
+    appFilter.chain(appWvShprDstortr, appDynamicCompressor, appReverb);
+    fftOut = new p5.FFT();
+    fftOut.setInput(appFilter.chain(appWvShprDstortr, appDynamicCompressor, appReverb));
 
-    // Connect the distortion to the compressor
-    appWvShprDstortr.disconnect();
-    appWvShprDstortr.connect(appDynamicCompressor);
-
-    // Connect the compressor to the reverb
-    appDynamicCompressor.disconnect();
-    appDynamicCompressor.connect(appReverb);
-
-    // Connect the reverb to the master volume
-    appReverb.disconnect();
-    appReverb.connect(masterVolume);
-
-    // Connect the master volume to the output
-    masterVolume.disconnect();
-    masterVolume.connect();
-
+    mic = new p5.AudioIn();
+    recorder = new p5.SoundRecorder();
+    recorder.setInput(appFilter.chain(appWvShprDstortr, appDynamicCompressor, appReverb));
+    soundFileRec = new p5.SoundFile();
 
 }
 
@@ -374,28 +465,7 @@ function filterDrywetSliderChanged() {
     appFilter.drywet(filterData.drywet);
 }
 
-/**
-It updates the display for the app.
-*/
-function draw() {
 
-    //set two canvases - for the input track display and for the output track display.
-    spectrumInCnv.clearRect(0, 0, cnvElmntIn.width, cnvElmntIn.height);
-    spectrumOutCnv.clearRect(0, 0, cnvElmntOut.width, cnvElmntOut.height);
-
-    // Display the fft spectrum of the current track based on the status of the track
-    //i.e. unprocessed track - spectrum In and processed track - spectrum out
-    // true - unprocessed track.
-    drawSpectrum(trackOriginalState);
-
-    //display track's amplitude value in the form of the rectangle's dimension
-    displayAplitudeMappedRect(spectrumInCnv);
-
-    //if the track is ended then change the flag "playing" status
-    if (isTrackEnded(trackPlayer)) {
-        isPlaying = false;
-    }
-}
 
 /**Display the rectangle which has it's dimensions mapped to the audio feature amplitude 
 in the input canvas*/
@@ -419,13 +489,6 @@ function isTrackEnded(track) {
 
 
 
-function calculateMaxAmplitude(track) {
-    track.play();
-    track.setVolume(0); // Mute the audio
-    maxAmplitude = track.getLevel();
-    track.stop();
-}
-
 function getNormalisedFactor(track) {
     track.play();
     track.setVolume(1);
@@ -441,27 +504,20 @@ function normaliseTrack(track, normalisedAmplitude) {
     return track;
 }
 
-function drawSpectrum(inputSpectrum) {
-    let spectrum = fft.analyze();
+function drawSpectrum(cnvs, inputSpectrum, inContext) {
 
     // Draw the spectrum as a bar graph
-    for (let i = 0; i < spectrum.length; i++) {
-        let x = map(i, 0, spectrum.length, 0, cnvElmntIn.width);
-        let h = -cnvElmntOut.height + map(spectrum[i], 0, 255, cnvElmntOut.height, 0);
+    for (let i = 0; i < inputSpectrum.length; i++) {
+        let x = map(i, 0, inputSpectrum.length, 0, inContext.width);
+        let h = -inContext.height + map(inputSpectrum[i], 0, 255, inContext.height, 0);
 
-        let hue = map(i, 0, spectrum.length, 0, 360);
+        let hue = map(i, 0, inputSpectrum.length, 0, 360);
 
-        if (inputSpectrum) {
-
-            spectrumInCnv.fillStyle = "blue";
-            spectrumInCnv.fillRect(x, cnvElmntOut.height, width / spectrum.length, h);
-        } else {
-            spectrumOutCnv.fillStyle = "blue"; //'rgb(hue, 255, 255)';
-            spectrumOutCnv.fillRect(x, cnvElmntOut.height, width / spectrum.length, h);
-        }
-
+        cnvs.fillStyle = "blue";
+        cnvs.fillRect(x, inContext.height, width / inputSpectrum.length, h);
     }
 }
+
 
 /*Play the track  when the button is pressed.*/
 function playClick() {
