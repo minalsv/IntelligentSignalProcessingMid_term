@@ -25,11 +25,15 @@ let recordedAudioFile;
 let audioRecorder;
 
 //Filter variables
+let appFilter;
 let filterType = 'lowpass'; //Low, high and band pass filters.
 let cutoffFreq = 22050;
 let resonance = 10;
 let drywet = 0.5;
 let outputLevel = 0.5;
+let filterDrywetSlider;
+let filterOutputLevelSlider;
+
 
 /**
 It loads the resources required for the app.
@@ -68,8 +72,31 @@ function setup() {
 
     //get a new filter and connect it to the player
     trackPlayer.disconnect();
-    filter = new p5.Filter(filterType);
-    trackPlayer.connect(filter);
+    appFilter = new p5.Filter(filterType);
+    filterDrywetSlider = document.getElementById('filterDryWet');
+    // Attach an event listener to the filter slider
+    filterDrywetSlider.addEventListener('change', filterDrywetSliderChanged);
+    
+
+    filterOutputLevelSlider = document.getElementById('filterOutputLevel');
+    // Attach an event listener to the filter slider
+    filterOutputLevelSlider.addEventListener('change', filterOutputLevelSliderChanged);
+
+    
+    trackPlayer.connect(appFilter);
+
+}
+
+/*On change in dry/wet filter value this event gets called and then updates the filter value.*/
+function filterOutputLevelSliderChanged() {
+    outputLevel = filterOutputLevelSlider.value();
+    appFilter.setVolume(outputLevel);
+}
+
+/*On change in dry/wet filter value this event gets called and then updates the filter value.*/
+function filterDrywetSliderChanged() {
+    drywet = filterDrywetSlider.value();
+    appFilter.drywet(drywet);
 }
 
 /**
@@ -229,7 +256,7 @@ function saveRecording(recordedAudioFile) {
 
 /*Sets the type of the filter */
 function setFilterType(type) {
-    filter.setType(type);
+    appFilter.setType(type); //set type as low-pass, high-pass or bandwidth filter.
     filterType = type;
 }
 
@@ -240,6 +267,7 @@ function cutOffFreqClick() {
     } else {
         cutoffFreq = cutoffFreq + 1000;
     }
+    appFilter.freq(cutoffFreq);
 }
 
 
@@ -250,4 +278,9 @@ function setResonanceClick() {
     } else {
         resonance = resonance + 10;
     }
+    appFilter.res(resonance); //set the new resonance
+}
+
+function filterDrywetSliderChanged() {
+    appFilter.drywet(filterDrywetSlider.value()); //set the new drywet value
 }
