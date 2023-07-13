@@ -527,7 +527,7 @@ function drawSpectrum(cnvs, inputSpectrum, inContext) {
 
 /*Play the track  when the button is pressed.*/
 function playClick() {
-    getAudioContext().resume();
+    //getAudioContext().resume();
     if (!isPlaying) {
         trackPlayer.play();
         isPlaying = true;
