@@ -1,8 +1,14 @@
+/*Ref: basic code is taken from the fft analyzer example exercise_8 from the course and modified it*/
 let mySound;
 let analyzer;
 let features;
 let startAnalyzer;
 let analyzerStarted;
+
+let lowMid;
+let treble;
+let highMid;
+let mid;
 
 const featureColors = {
     rms: [0, 0, 255],
@@ -12,7 +18,7 @@ const featureColors = {
 
 function preload() {
     soundFormats('mp3', 'ogg', 'wav');
-    mySound = loadSound('../sounds/Ex2_sound1.wav');
+    mySound = loadSound('../sounds/Ex2_sound3.wav');
 
 
     startAnalyzer = false;
@@ -50,21 +56,22 @@ function setup() {
                 audioContext: audioContext,
                 source: mySound,
                 bufferSize: 512, // Adjust buffer size as needed
-                featureExtractors: ['rms', 'zcr'], // Add desired features
+                featureExtractors: ['rms', 'zcr','spectralCrest','energy'], // Add desired features
                 callback: features => {
                     console.log(features);
+                    lowMid = features.rms*10; //0.022
+                    treble = features.zcr*10;//10
+                    highMid = features.spectralCrest*10;//7.9
+                    mid = features.energy*10;//0.5
+                    console.log(lowMid,treble,highMid,mid);
                 } // Function to handle the extracted features
             });
         console.log("Analyzer initialized!");
-        // Start the analyzer
-        analyzer.start();
-        console.log("Analyzer started!");
-        analyzerStarted = true;
 
     }
 
 }
-
+;
 function draw() {
     background(180, 100);
 
@@ -95,10 +102,8 @@ function draw() {
     pop();
 
     fill(30, 30, 255, 200);
-    let treble = fft.getEnergy("treble");
-    let lowMid = fft.getEnergy("lowMid");
-    let mid = fft.getEnergy("mid");
-    let highMid = fft.getEnergy("highMid");
+
+
     arc(200, 275, treble, treble, 0, HALF_PI);
     fill(100, 55, 255, 200);
     arc(200, 275, lowMid, lowMid, HALF_PI, PI);
