@@ -5,7 +5,7 @@ let features;
 let appData;
 let storedVariables;
 let allowToPlayTrack = false;
-let shape='circle';
+let shape = 'circle';
 
 let audioData = [{
         loadedAudio: null,
@@ -26,7 +26,13 @@ let audioData = [{
         file: '../sounds/Ex2_sound3.wav',
         features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
         featureFactors: [1000, 10, 10, 100]
-    }, ];
+    },
+    {
+        loadedAudio: null,
+        file: '../sounds/Kalte_Ohren_(_Remix_).mp3',
+        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
+        featureFactors: [1000, 10, 10, 100]
+    }];
 
 
 
@@ -41,7 +47,7 @@ const featureColors = {
     rms: [0, 0, 205, 200],
     spectralCentroid: [65, 105, 225, 200],
     mfcc: [255, 69, 0, 200],
-    zcr: [255, 165, 0, 200],
+    zcr: [173, 255, 47, 200],
     spectralCrest: [0, 206, 209, 200],
     energy: [139, 0, 0, 200],
     spectralKurtosis: [138, 43, 226, 200]
@@ -94,6 +100,8 @@ function setupEverything() {
     sliderPan = createSlider(-1, 1, 0, 0.01);
     sliderPan.position(20, 115);
 
+
+
     fft = new p5.FFT(0.2, 2048);
 
     if (typeof Meyda == 'undefined') {
@@ -134,6 +142,10 @@ function draw() {
     text('volume', 80, 20);
     text('rate', 80, 65);
     text('pan', 80, 110);
+    textSize(12);
+    fill(0, 0, 255); // Red color
+    // Display text on the canvas
+    text('Selected track: '+extractFileName(audioData[adoDataIndex]['file']), 500, 20);
 
     let vol = Math.pow(sliderVolume.value(), 3);
     audioData[adoDataIndex]['loadedAudio'].setVolume(vol);
@@ -189,23 +201,29 @@ function drawCircles() {
 
 
     fill(featureColors[audioData[adoDataIndex]['features'][0]]);
-    circle(50, y, lowerLeft);
+    circle(100, y, lowerLeft);
 
     fill(featureColors[audioData[adoDataIndex]['features'][1]]);
     y = map(level, 0, 1, height, 275);
     x = random(0, width / 2);
-    circle(200, y, lowerRight);
+    circle(250, y, lowerRight);
 
     fill(featureColors[audioData[adoDataIndex]['features'][2]]);
     y = map(level, 0, 1, height, 275);
     x = random(0, width / 2);
-    circle(350, y, upperRight);
+    circle(450, y, upperRight);
 
     fill(featureColors[audioData[adoDataIndex]['features'][3]]);
     y = map(level, 0, 1, height, 275);
     x = random(0, width / 2);
     circle(500, y, upperLeft);
 
+}
+
+function extractFileName(fullPath) {
+    /*ref:https://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript*/
+    var filename = fullPath.split(['/', '\\']).pop();
+    return filename
 }
 
 function drawArcs() {
