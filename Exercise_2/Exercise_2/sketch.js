@@ -2,6 +2,10 @@
 let analyzer;
 let features;
 
+let appData;
+let storedVariables;
+let allowToPlayTrack = false;
+
 let audioData = [{
         loadedAudio: null,
         file: '../sounds/Ex2_sound1.wav',
@@ -11,7 +15,7 @@ let audioData = [{
 
     {
         loadedAudio: null,
-        file: '../sounds/Ex2_sound1.wav',
+        file: '../sounds/Ex2_sound2.wav',
         features: ['rms', 'zcr', 'spectralCrest', 'energy'],
         featureFactors: [1000, 10, 10, 100]
     },
@@ -43,11 +47,32 @@ const featureColors = {
 };
 
 function preload() {
+    // Retrieve the stored variable values from localStorage
+    const storedData = localStorage.getItem('adoDataIndex');
+
+    // Restore the index if it'S available
+    if (storedData) {
+        adoDataIndex = JSON.parse(storedData);
+    }
+    const storedFlag = localStorage.getItem('allowToPlayTrack');
+
+    // Restore the index if it'S available
+    if (storedData) {
+        allowToPlayTrack = JSON.parse(storedFlag);
+    }
+
     soundFormats('mp3', 'ogg', 'wav');
     audioData[adoDataIndex]['loadedAudio'] = loadSound(audioData[adoDataIndex]['file']);
 }
 
-function setup() {
+function setupEverything() {
+
+
+
+    if (!allowToPlayTrack) {
+        adoDataIndex = 0;
+    }
+
     createCanvas(400, 400);
     background(180);
 
@@ -57,7 +82,9 @@ function setup() {
     jumpButton = createButton('jump');
     jumpButton.position(250, 20);
     jumpButton.mousePressed(jumpSong);
-
+    nextTrack = createButton('Next track');
+    nextTrack.position(300, 20);
+    nextTrack.mousePressed(loadNextTrack);
 
     sliderVolume = createSlider(0, 1, 1, 0.01);
     sliderVolume.position(20, 25);
@@ -93,6 +120,10 @@ function setup() {
 
     }
 
+}
+
+function setup() {
+    setupEverything();
 };
 
 function draw() {
@@ -147,8 +178,8 @@ function jumpSong() {
     audioData[adoDataIndex]['loadedAudio'].jump(t);
 
 
-    audioData[adoDataIndex]['loadedAudio'] = loadSound(audioData[adoDataIndex]['file']);
-    location.reload();
+
+
 }
 
 function playStopSound() {
@@ -162,11 +193,36 @@ function playStopSound() {
 
 
     } else {
-        //mySound.play();
+
         audioData[adoDataIndex]['loadedAudio'].loop()
         analyzer.start();
         playStopButton.html('stop');
 
 
     }
+}
+
+function loadNextTrack() {
+    if (!audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
+        if (adoDataIndex < (audioData.length - 1)) {
+            adoDataIndex++;
+        } else {
+            adoDataIndex = 0;
+        }
+        allowToPlayTrack = true;
+        localStorage.setItem('allowToPlayTrack', JSON.stringify(allowToPlayTrack));
+        localStorage.setItem('adoDataIndex', JSON.stringify(adoDataIndex));
+        reloadSketch();
+    }
+
+}
+
+function reloadSketch() {
+    // Store the variable values in localStorage
+    localStorage.setItem('adoDataIndex', JSON.stringify(adoDataIndex));
+    localStorage.setItem('allowToPlayTrack', JSON.stringify(allowToPlayTrack));
+
+    preload();
+    // Reload the sketch by calling the setup() function again
+    setupEverything()
 }
