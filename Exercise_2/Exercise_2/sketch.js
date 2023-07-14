@@ -5,6 +5,7 @@ let features;
 let appData;
 let storedVariables;
 let allowToPlayTrack = false;
+let shape='circle';
 
 let audioData = [{
         loadedAudio: null,
@@ -73,7 +74,7 @@ function setupEverything() {
         adoDataIndex = 0;
     }
 
-    createCanvas(400, 400);
+    createCanvas(windowWidth, windowHeight);
     background(180);
 
     playStopButton = createButton('play');
@@ -119,7 +120,7 @@ function setupEverything() {
         console.log("Analyzer initialized!");
 
     }
-
+    amplitude = new p5.Amplitude();
 }
 
 function setup() {
@@ -141,7 +142,14 @@ function draw() {
 
     let spectrum = fft.analyze();
     drawSpectrum(spectrum, 200, 50);
-    drawArcs();
+    if (shape = 'circle') {
+        drawCircles();
+    } else if (shape = 'rectangle') {
+        drawRects();
+    } else {
+        drawArcs();
+    }
+
 }
 
 function drawSpectrum(spectrum, translateX, translatey) {
@@ -161,25 +169,62 @@ function drawSpectrum(spectrum, translateX, translatey) {
     pop();
 }
 
-function drawArcs() {
+function drawRects() {
     fill(featureColors[audioData[adoDataIndex]['features'][0]]);
-    arc(200, 275, lowerLeft, lowerLeft, 0, HALF_PI);
+    rect(50, 275, lowerLeft, lowerLeft, 0, HALF_PI);
     fill(featureColors[audioData[adoDataIndex]['features'][1]]);
-    arc(200, 275, lowerRight, lowerRight, HALF_PI, PI);
+    rect(200, 275, lowerRight, lowerRight, HALF_PI, PI);
     fill(featureColors[audioData[adoDataIndex]['features'][2]]);
-    arc(200, 275, upperRight, upperRight, PI, PI + HALF_PI);
+    rect(350, 275, upperRight, upperRight, PI, PI + HALF_PI);
     fill(featureColors[audioData[adoDataIndex]['features'][3]]);
-    arc(200, 275, upperLeft, upperLeft, PI + HALF_PI, 2 * PI);
+    rect(500, 275, upperLeft, upperLeft, PI + HALF_PI, 2 * PI);
+}
+
+function drawCircles() {
+    // Get the current amplitude level of the audio
+    level = amplitude.getLevel();
+
+    // Map the amplitude to the y-coordinate of the circle
+    let y = random(map(level, 0, 1, height, 275), height);
+
+
+    fill(featureColors[audioData[adoDataIndex]['features'][0]]);
+    circle(50, y, lowerLeft);
+
+    fill(featureColors[audioData[adoDataIndex]['features'][1]]);
+    y = map(level, 0, 1, height, 275);
+    x = random(0, width / 2);
+    circle(200, y, lowerRight);
+
+    fill(featureColors[audioData[adoDataIndex]['features'][2]]);
+    y = map(level, 0, 1, height, 275);
+    x = random(0, width / 2);
+    circle(350, y, upperRight);
+
+    fill(featureColors[audioData[adoDataIndex]['features'][3]]);
+    y = map(level, 0, 1, height, 275);
+    x = random(0, width / 2);
+    circle(500, y, upperLeft);
+
+}
+
+function drawArcs() {
+    let x = width / 2;
+    let y = height / 2;
+    fill(featureColors[audioData[adoDataIndex]['features'][0]]);
+    arc(x, y, lowerLeft, lowerLeft, 0, HALF_PI);
+    fill(featureColors[audioData[adoDataIndex]['features'][1]]);
+    arc(x, y, lowerRight, lowerRight, HALF_PI, PI);
+    fill(featureColors[audioData[adoDataIndex]['features'][2]]);
+    arc(x, y, upperRight, upperRight, PI, PI + HALF_PI);
+    fill(featureColors[audioData[adoDataIndex]['features'][3]]);
+    arc(x, y, upperLeft, upperLeft, PI + HALF_PI, 2 * PI);
 }
 
 function jumpSong() {
     var dur = audioData[adoDataIndex]['loadedAudio'].duration();
     var t = random(dur);
     audioData[adoDataIndex]['loadedAudio'].jump(t);
-
-
-
-
 }
 
 function playStopSound() {
@@ -189,9 +234,6 @@ function playStopSound() {
         //mySound.pause();
         playStopButton.html('play');
         background(180);
-
-
-
     } else {
 
         audioData[adoDataIndex]['loadedAudio'].loop()
