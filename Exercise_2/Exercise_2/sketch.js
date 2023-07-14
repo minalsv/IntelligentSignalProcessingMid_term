@@ -1,20 +1,28 @@
 /*Ref: basic code is taken from the fft analyzer example exercise_8 from the course and modified it*/
-let mySound;
 let analyzer;
 let features;
 
+let audioData = [{
+        loadedAudio: null,
+        file: '../sounds/Ex2_sound1.wav',
+        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
+        featureFactors: [1000, 10, 10, 10]
+    },
 
-let file1 = '../sounds/Ex2_sound1.wav';
-let file1Features = ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'];
-let file1Factors = [1000,10,10,10];
+    {
+        loadedAudio: null,
+        file: '../sounds/Ex2_sound1.wav',
+        features: ['rms', 'zcr', 'spectralCrest', 'energy'],
+        featureFactors: [1000, 10, 10, 100]
+    },
 
-let file2 = '../sounds/Ex2_sound2.wav';
-let file2Features = ['rms', 'zcr', 'spectralCrest', 'energy'];
-let file2Factors = [1000,10,10,100];
+    {
+        loadedAudio: null,
+        file: '../sounds/Ex2_sound3.wav',
+        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
+        featureFactors: [1000, 10, 10, 100]
+    }, ];
 
-let file3 = '../sounds/Ex2_sound3.wav';
-let file3Features = ['rms', 'zcr', 'spectralCrest', 'energy'];
-let file3Factors = [1000,10,10,100];
 
 
 let lowerRight;
@@ -22,9 +30,7 @@ let lowerLeft;
 let upperLeft;
 let upperRight;
 
-let currentFeatures = file2Features;
-let currentFile = file2;
-let currentFactors = file2Factors;
+let adoDataIndex = 0;
 
 const featureColors = {
     rms: [0, 0, 205, 200],
@@ -33,12 +39,12 @@ const featureColors = {
     zcr: [255, 165, 0, 200],
     spectralCrest: [0, 206, 209, 200],
     energy: [139, 0, 0, 200],
-    spectralKurtosis:[138, 43, 226,200]
+    spectralKurtosis: [138, 43, 226, 200]
 };
 
 function preload() {
     soundFormats('mp3', 'ogg', 'wav');
-    mySound = loadSound(currentFile);
+    audioData[adoDataIndex]['loadedAudio'] = loadSound(audioData[adoDataIndex]['file']);
 }
 
 function setup() {
@@ -71,15 +77,15 @@ function setup() {
         analyzer =
             analyzer = Meyda.createMeydaAnalyzer({
                 audioContext: audioContext,
-                source: mySound,
+                source: audioData[adoDataIndex]['loadedAudio'],
                 bufferSize: 512, // Adjust buffer size as needed
-                featureExtractors: currentFeatures, // Add desired features
+                featureExtractors: audioData[adoDataIndex]['features'], // extract the desired features
                 callback: features => {
                     console.log(features);
-                    lowerRight = features[currentFeatures[0]] * currentFactors[0]; 
-                    lowerLeft = features[currentFeatures[1]] * currentFactors[1]; 
-                    upperLeft = features[currentFeatures[2]] * currentFactors[2]; 
-                    upperRight = features[currentFeatures[3]] * currentFactors[3]; 
+                    lowerRight = features[audioData[adoDataIndex]['features'][0]] * audioData[adoDataIndex]['featureFactors'][0];
+                    lowerLeft = features[audioData[adoDataIndex]['features'][1]] * audioData[adoDataIndex]['featureFactors'][1];
+                    upperLeft = features[audioData[adoDataIndex]['features'][2]] * audioData[adoDataIndex]['featureFactors'][2];
+                    upperRight = features[audioData[adoDataIndex]['features'][3]] * audioData[adoDataIndex]['featureFactors'][3];
                     console.log(lowerRight, lowerLeft, upperLeft, upperRight);
                 } // Function to handle the extracted features
             });
@@ -98,17 +104,17 @@ function draw() {
     text('pan', 80, 110);
 
     let vol = Math.pow(sliderVolume.value(), 3);
-    mySound.setVolume(vol);
-    mySound.rate(sliderRate.value());
-    mySound.pan(sliderPan.value());
+    audioData[adoDataIndex]['loadedAudio'].setVolume(vol);
+    audioData[adoDataIndex]['loadedAudio'].rate(sliderRate.value());
+    audioData[adoDataIndex]['loadedAudio'].pan(sliderPan.value());
 
     let spectrum = fft.analyze();
-    drawSpectrum(spectrum,200,50);
+    drawSpectrum(spectrum, 200, 50);
     drawArcs();
 }
 
-function drawSpectrum(spectrum,translateX,translatey) {
-    
+function drawSpectrum(spectrum, translateX, translatey) {
+
     push();
     translate(translateX, translatey);
     scale(0.33, 0.20);
@@ -125,33 +131,42 @@ function drawSpectrum(spectrum,translateX,translatey) {
 }
 
 function drawArcs() {
-    fill(featureColors[currentFeatures[0]]);
+    fill(featureColors[audioData[adoDataIndex]['features'][0]]);
     arc(200, 275, lowerLeft, lowerLeft, 0, HALF_PI);
-    fill(featureColors[currentFeatures[1]]);
+    fill(featureColors[audioData[adoDataIndex]['features'][1]]);
     arc(200, 275, lowerRight, lowerRight, HALF_PI, PI);
-    fill(featureColors[currentFeatures[2]]);
+    fill(featureColors[audioData[adoDataIndex]['features'][2]]);
     arc(200, 275, upperRight, upperRight, PI, PI + HALF_PI);
-    fill(featureColors[currentFeatures[3]]);
+    fill(featureColors[audioData[adoDataIndex]['features'][3]]);
     arc(200, 275, upperLeft, upperLeft, PI + HALF_PI, 2 * PI);
 }
 
 function jumpSong() {
-    var dur = mySound.duration();
+    var dur = audioData[adoDataIndex]['loadedAudio'].duration();
     var t = random(dur);
-    mySound.jump(t);
+    audioData[adoDataIndex]['loadedAudio'].jump(t);
+
+
+    audioData[adoDataIndex]['loadedAudio'] = loadSound(audioData[adoDataIndex]['file']);
+    location.reload();
 }
 
 function playStopSound() {
-    if (mySound.isPlaying()) {
-        mySound.stop();
+    if (audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
+        audioData[adoDataIndex]['loadedAudio'].stop();
         analyzer.stop();
         //mySound.pause();
         playStopButton.html('play');
         background(180);
+
+
+
     } else {
         //mySound.play();
-        mySound.loop()
+        audioData[adoDataIndex]['loadedAudio'].loop()
         analyzer.start();
         playStopButton.html('stop');
+
+
     }
 }
