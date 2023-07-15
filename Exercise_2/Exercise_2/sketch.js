@@ -8,6 +8,7 @@ let allowToPlayTrack = false;
 let shape = 'circle';
 
 let voiceCommandsRec;
+let displayFlowers = false;
 
 let audioData = [{
         loadedAudio: null,
@@ -32,8 +33,8 @@ let audioData = [{
     {
         loadedAudio: null,
         file: '../sounds/Kalte_Ohren_(_Remix_).mp3',
-        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy'],
-        featureFactors: [1000, 10, 10, 100, 100]
+        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy', 'spectralFlatness', 'chroma'],
+        featureFactors: [1000, 10, 10, 100, 100, 10, 10]
     }];
 
 
@@ -45,6 +46,30 @@ let upperRight;
 
 let adoDataIndex = 0;
 
+let savedFeatureData = {
+    rms: NaN,
+    spectralCentroid: NaN,
+    mfcc: NaN,
+    zcr: NaN,
+    spectralCrest: NaN,
+    energy: NaN,
+    spectralKurtosis: NaN,
+    spectralFlatness: NaN,
+    complexSpectrum: NaN,
+    spectralSlope: NaN,
+    spectralRolloff: NaN,
+    spectralSpread: NaN,
+    spectralSkewness: NaN,
+    amplitudeSpectrum: NaN,
+    loudness: NaN,
+    perceptualSpread: NaN,
+    perceptualSharpness: NaN,
+    powerSpectrum: NaN,
+    chroma: NaN,
+    spectralFlux: NaN,
+    melBands: NaN
+};
+
 const featureColors = {
     rms: [0, 0, 205, 200],
     spectralCentroid: [65, 105, 225, 200],
@@ -52,8 +77,23 @@ const featureColors = {
     zcr: [173, 255, 47, 200],
     spectralCrest: [0, 206, 209, 200],
     energy: [139, 0, 0, 200],
-    spectralKurtosis: [138, 43, 226, 200]
+    spectralKurtosis: [138, 43, 226, 200],
+    spectralFlatness: [255, 0, 255],
+    complexSpectrum: [0, 100, 0],
+    spectralSlope: [85, 107, 47],
+    spectralRolloff: [255, 218, 185],
+    spectralSpread: [255, 105, 180],
+    spectralSkewness: [240, 128, 128],
+    amplitudeSpectrum: [255, 215, 0],
+    loudness: [176, 224, 230],
+    perceptualSpread: [165, 42, 42],
+    perceptualSharpness: [0, 0, 0],
+    powerSpectrum: [255, 222, 173],
+    chroma: [127, 255, 212],
+    spectralFlux: [30, 144, 255],
+    melBands: [135, 206, 235]
 };
+
 
 function preload() {
     // Retrieve the stored variable values from localStorage
@@ -133,15 +173,20 @@ function setupEverything() {
 function processFeatures(features) {
 
     console.log(features);
-    if (audioData[adoDataIndex]['features'].length == 4) {
-        lowerRight = features[audioData[adoDataIndex]['features'][0]] * audioData[adoDataIndex]['featureFactors'][0];
-        lowerLeft = features[audioData[adoDataIndex]['features'][1]] * audioData[adoDataIndex]['featureFactors'][1];
-        upperLeft = features[audioData[adoDataIndex]['features'][2]] * audioData[adoDataIndex]['featureFactors'][2];
-        upperRight = features[audioData[adoDataIndex]['features'][3]] * audioData[adoDataIndex]['featureFactors'][3];
-        console.log(lowerRight, lowerLeft, upperLeft, upperRight);
-    } else {
-
+    displayFlowers = false;
+    if (audioData[adoDataIndex]['features'].length > 3) {
+        displayFlowers = true;
     }
+    lowerRight = features[audioData[adoDataIndex]['features'][0]] * audioData[adoDataIndex]['featureFactors'][0];
+    lowerLeft = features[audioData[adoDataIndex]['features'][1]] * audioData[adoDataIndex]['featureFactors'][1];
+    upperLeft = features[audioData[adoDataIndex]['features'][2]] * audioData[adoDataIndex]['featureFactors'][2];
+    upperRight = features[audioData[adoDataIndex]['features'][3]] * audioData[adoDataIndex]['featureFactors'][3];
+    console.log(lowerRight, lowerLeft, upperLeft, upperRight);
+
+    for (i = 0; i < audioData[adoDataIndex]['features'].length; i++) {
+        savedFeatureData[audioData[adoDataIndex]['features'][i]] = features[audioData[adoDataIndex]['features'][i]];
+    }
+
 }
 
 function initSpeechRec() {
@@ -179,10 +224,26 @@ function draw() {
         drawCircles();
     } else if (shape == 'rectangle') {
         drawRects();
-    } else if (shape == 'arc'){
+    } else if (shape == 'arc') {
         drawArcs();
     }
-    drawFlowers();
+
+    showFlowers();
+}
+
+
+function showFlowers() {
+    if (displayFlowers && audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
+        let centerColor = featureColors[audioData[adoDataIndex]['features'][0]];
+        for (i = 1; i < audioData[adoDataIndex]['features'].length; i++) {
+
+            let petalLength = savedFeatureData[audioData[adoDataIndex]['features'][i]] * audioData[adoDataIndex]['featureFactors'][i];
+            let stemX = random(0, width);
+            drawFlowers(featureColors[audioData[adoDataIndex]['features'][i]],
+                centerColor, stemX, petalLength);
+        }
+
+    }
 }
 
 function drawSpectrum(spectrum, translateX, translatey) {
@@ -202,29 +263,34 @@ function drawSpectrum(spectrum, translateX, translatey) {
     pop();
 }
 
-function drawFlowers(petalColors,stemColor,stemAngle) {
-    
+function drawFlowers(petalColor, centerColor, StemX, petalLength) {
+
     //Ref: https://editor.p5js.org/aanapandey05/sketches/r3diSJ9Gb
     // Draw a stem
-    
     // Get the current amplitude level of the audio
     level = amplitude.getLevel();
-
     // Map the amplitude to the y-coordinate of the circle
-    let stemHeight = random(map(level, 0, 1, height/2, height/2 - 100), height/2);
-    let stemStart = width / 2 - 5; 
+    let stemHeight = random(map(level, 0, 1, height / 2, height / 2 - 100), height / 2);
+
+    drawAFlower(stemHeight, StemX, petalColor, centerColor, petalLength);
+
+}
+
+function drawAFlower(stemHeight, stemStart, petalColor, centerColor, petalLength) {
+
+
     fill(0, 128, 0); // Green color
     rect(stemStart, stemHeight, 10, height / 2);
 
     // Draw petals
-    fill(255, 255, 0); // Yellow color
+    fill(petalColor); // Yellow color
     for (let angle = 0; angle < 360; angle += 60) {
         push();
-        translate(stemStart+5, stemHeight);
+        translate(stemStart + 5, stemHeight);
         rotate(radians(angle));
-        ellipse(0, -50, 40, 80);
-        fill(255, 127, 80);
-        ellipse(0 , -20, 30);
+        ellipse(0, -50, 40, 40 + petalLength);
+        fill(centerColor);
+        ellipse(0, -20, 30);
         pop();
     }
 
@@ -298,22 +364,20 @@ function playStopSound() {
     if (audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
         audioData[adoDataIndex]['loadedAudio'].stop();
         analyzer.stop();
-        // Start listening
-        voiceCommandsRec.start();
-
         playStopButton.html('play');
+        voiceCommandsRec.start()
         background(180);
 
     } else {
 
         audioData[adoDataIndex]['loadedAudio'].loop()
         analyzer.start();
-        // Stop listening
-        //voiceCommandsRec.stop();
+        voiceCommandsRec.stop()
         playStopButton.html('stop');
 
 
     }
+
 }
 
 function loadNextTrack() {
