@@ -7,6 +7,8 @@ let storedVariables;
 let allowToPlayTrack = false;
 let shape = 'circle';
 
+let voiceCommandsRec;
+
 let audioData = [{
         loadedAudio: null,
         file: '../sounds/Ex2_sound1.wav',
@@ -129,6 +131,17 @@ function setupEverything() {
 
     }
     amplitude = new p5.Amplitude();
+
+    initSpeechRec(); //speech recognisation started only after presseing "stop" else it is stopped.
+
+
+}
+
+function initSpeechRec() {
+    //ref: https://github.com/IDMNYU/p5.js-speech/blob/master/examples/05continuousrecognition.html
+    voiceCommandsRec = new p5.SpeechRec('en-UK', extractCommands);
+    voiceCommandsRec.continuous = true; // do continuous recognition
+    voiceCommandsRec.interimResults = true; // allow partial recognition (faster, less accurate)
 }
 
 function setup() {
@@ -145,8 +158,8 @@ function draw() {
     textSize(12);
     fill(0, 0, 255); // Red color
     // Display text on the canvas
-    text('Selected track: '+extractFileName(audioData[adoDataIndex]['file']), 500, 20);
-
+    text('Selected track: ' + extractFileName(audioData[adoDataIndex]['file']), 500, 20);
+    text('Stop the track to give voice commands: Rectangle, Circle, Arcs', 500, 40);
     let vol = Math.pow(sliderVolume.value(), 3);
     audioData[adoDataIndex]['loadedAudio'].setVolume(vol);
     audioData[adoDataIndex]['loadedAudio'].rate(sliderRate.value());
@@ -154,9 +167,10 @@ function draw() {
 
     let spectrum = fft.analyze();
     drawSpectrum(spectrum, 200, 50);
-    if (shape = 'circle') {
+    console.log(shape);
+    if (shape == 'circle') {
         drawCircles();
-    } else if (shape = 'rectangle') {
+    } else if (shape == 'rectangle') {
         drawRects();
     } else {
         drawArcs();
@@ -249,13 +263,18 @@ function playStopSound() {
     if (audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
         audioData[adoDataIndex]['loadedAudio'].stop();
         analyzer.stop();
-        //mySound.pause();
+        // Start listening
+        voiceCommandsRec.start();
+
         playStopButton.html('play');
         background(180);
+
     } else {
 
         audioData[adoDataIndex]['loadedAudio'].loop()
         analyzer.start();
+        // Stop listening
+        //voiceCommandsRec.stop();
         playStopButton.html('stop');
 
 
@@ -285,4 +304,26 @@ function reloadSketch() {
     preload();
     // Reload the sketch by calling the setup() function again
     setupEverything()
+}
+
+function extractCommands() {
+    //Ref:https://idmnyu.github.io/p5.js-speech/
+    let transcript = voiceCommandsRec.resultString;
+    //ref: https://github.com/IDMNYU/p5.js-speech/blob/master/examples/05continuousrecognition.html
+    var command = voiceCommandsRec.resultString.split(' ').pop();
+    // Process the recognized commands
+    processCommands(command);
+
+}
+
+function processCommands(transcript) {
+    // Check if expected commands are present in the speech, and set the appropriate shape for the recognised command
+    if (transcript.includes('circle')) {
+        shape = 'circle';
+    } else if (transcript.includes('rectangle')) {
+        shape = 'rectangle';
+    } else if (transcript.includes('arcs')) {
+        shape = 'arcs';
+    }
+
 }
