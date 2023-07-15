@@ -1,4 +1,5 @@
-/*Ref: basic code is taken from the fft analyzer example exercise_8 from the course and modified it*/
+/*Ref: basic code is taken from the fft analyzer example exercise_8 from the course and modified it
+Also p5.js examples*/
 let analyzer;
 let features;
 
@@ -33,8 +34,8 @@ let audioData = [{
     {
         loadedAudio: null,
         file: '../sounds/Kalte_Ohren_(_Remix_).mp3',
-        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy', 'spectralFlatness', 'chroma'],
-        featureFactors: [1000, 10, 10, 100, 100, 10, 10]
+        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy', 'spectralFlatness', 'chroma','spectralSlope'],
+        featureFactors: [1000, 10, 10, 100, 100, 10, 10,10]
     }];
 
 
@@ -174,7 +175,7 @@ function processFeatures(features) {
 
     console.log(features);
     displayFlowers = false;
-    if (audioData[adoDataIndex]['features'].length > 3) {
+    if (audioData[adoDataIndex]['features'].length > 5) {
         displayFlowers = true;
     }
     lowerRight = features[audioData[adoDataIndex]['features'][0]] * audioData[adoDataIndex]['featureFactors'][0];
