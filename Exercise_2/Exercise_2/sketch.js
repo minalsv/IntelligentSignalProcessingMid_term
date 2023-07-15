@@ -24,27 +24,27 @@ let adoDataIndex = 0;
 /*Stores the track specific data e.g. which file, which features to extract and what shall be the multiplying factor for them*/
 let audioData = [{
         loadedAudio: null,
-        file: '../sounds/Ex2_sound1.wav',
+        file: 'sounds/Ex2_sound1.wav',
         features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
         featureFactors: [1000, 10, 10, 10]
     },
 
     {
         loadedAudio: null,
-        file: '../sounds/Ex2_sound2.wav',
+        file: 'sounds/Ex2_sound2.wav',
         features: ['rms', 'zcr', 'spectralCrest', 'energy'],
         featureFactors: [1000, 10, 10, 100]
     },
 
     {
         loadedAudio: null,
-        file: '../sounds/Ex2_sound3.wav',
+        file: 'sounds/Ex2_sound3.wav',
         features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
         featureFactors: [1000, 10, 10, 100]
     },
     {
         loadedAudio: null,
-        file: '../sounds/Kalte_Ohren_(_Remix_).mp3',
+        file: 'sounds/Kalte_Ohren_(_Remix_).mp3',
         features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy', 'spectralFlatness', 'chroma', 'spectralSlope'],
         featureFactors: [1000, 10, 10, 100, 100, 10, 10, 10]
     }];
