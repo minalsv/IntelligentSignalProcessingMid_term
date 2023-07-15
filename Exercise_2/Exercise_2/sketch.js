@@ -118,14 +118,7 @@ function setupEverything() {
                 source: audioData[adoDataIndex]['loadedAudio'],
                 bufferSize: 512, // Adjust buffer size as needed
                 featureExtractors: audioData[adoDataIndex]['features'], // extract the desired features
-                callback: features => {
-                    console.log(features);
-                    lowerRight = features[audioData[adoDataIndex]['features'][0]] * audioData[adoDataIndex]['featureFactors'][0];
-                    lowerLeft = features[audioData[adoDataIndex]['features'][1]] * audioData[adoDataIndex]['featureFactors'][1];
-                    upperLeft = features[audioData[adoDataIndex]['features'][2]] * audioData[adoDataIndex]['featureFactors'][2];
-                    upperRight = features[audioData[adoDataIndex]['features'][3]] * audioData[adoDataIndex]['featureFactors'][3];
-                    console.log(lowerRight, lowerLeft, upperLeft, upperRight);
-                } // Function to handle the extracted features
+                callback: processFeatures
             });
         console.log("Analyzer initialized!");
 
@@ -135,6 +128,18 @@ function setupEverything() {
     initSpeechRec(); //speech recognisation started only after presseing "stop" else it is stopped.
 
 
+}
+
+function processFeatures(features) {
+
+    console.log(features);
+    if (audioData[adoDataIndex]['features'].length == 4) {
+        lowerRight = features[audioData[adoDataIndex]['features'][0]] * audioData[adoDataIndex]['featureFactors'][0];
+        lowerLeft = features[audioData[adoDataIndex]['features'][1]] * audioData[adoDataIndex]['featureFactors'][1];
+        upperLeft = features[audioData[adoDataIndex]['features'][2]] * audioData[adoDataIndex]['featureFactors'][2];
+        upperRight = features[audioData[adoDataIndex]['features'][3]] * audioData[adoDataIndex]['featureFactors'][3];
+        console.log(lowerRight, lowerLeft, upperLeft, upperRight);
+    }
 }
 
 function initSpeechRec() {
