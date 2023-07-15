@@ -1,5 +1,6 @@
 /*Ref: basic code is taken from the fft analyzer example exercise_8 from the course and modified it
 Also p5.js examples*/
+/*App data and variables*/
 let analyzer;
 let features;
 
@@ -11,6 +12,16 @@ let shape = 'circle';
 let voiceCommandsRec;
 let displayFlowers = false;
 
+/*First 4 features are extracted in these variables for clarity.*/
+let lowerRight;
+let lowerLeft;
+let upperLeft;
+let upperRight;
+
+/*The app allows to select 4 files and so adoDataIndex help to identify and select file related data*/
+let adoDataIndex = 0;
+
+/*Stores the track specific data e.g. which file, which features to extract and what shall be the multiplying factor for them*/
 let audioData = [{
         loadedAudio: null,
         file: '../sounds/Ex2_sound1.wav',
@@ -34,19 +45,12 @@ let audioData = [{
     {
         loadedAudio: null,
         file: '../sounds/Kalte_Ohren_(_Remix_).mp3',
-        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy', 'spectralFlatness', 'chroma','spectralSlope'],
-        featureFactors: [1000, 10, 10, 100, 100, 10, 10,10]
+        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy', 'spectralFlatness', 'chroma', 'spectralSlope'],
+        featureFactors: [1000, 10, 10, 100, 100, 10, 10, 10]
     }];
 
 
-
-let lowerRight;
-let lowerLeft;
-let upperLeft;
-let upperRight;
-
-let adoDataIndex = 0;
-
+/*Feature data is read after the analyzer gives it and then it has been stored here as "features" from analyzer are not accessible reliably throughout the scope */
 let savedFeatureData = {
     rms: NaN,
     spectralCentroid: NaN,
@@ -71,6 +75,7 @@ let savedFeatureData = {
     melBands: NaN
 };
 
+/*Each available feature is mapped to a color so easy to extract later*/
 const featureColors = {
     rms: [0, 0, 205, 200],
     spectralCentroid: [65, 105, 225, 200],
@@ -95,8 +100,11 @@ const featureColors = {
     melBands: [135, 206, 235]
 };
 
-
+/*Preload functins loads the resources.*/
 function preload() {
+    
+    /*ref: https://thecodingtrain.com/tracks/p5-tips-and-tricks/more-p5/local-storage
+    ref: https://www.geeksforgeeks.org/p5-js-storeitem-function/*/
     // Retrieve the stored variable values from localStorage
     const storedData = localStorage.getItem('adoDataIndex');
 
@@ -112,13 +120,12 @@ function preload() {
     }
 
     soundFormats('mp3', 'ogg', 'wav');
-    audioData[adoDataIndex]['loadedAudio'] = loadSound(audioData[adoDataIndex]['file']);
+    audioData[adoDataIndex]['loadedAudio'] = loadSound(audioData[adoDataIndex]['file']);//load cureent index related file
 }
 
+/*Need this function for reloading the app, calling setup was not working correctly after reload*/
 function setupEverything() {
-
-
-
+    
     if (!allowToPlayTrack) {
         adoDataIndex = 0;
     }
@@ -166,11 +173,13 @@ function setupEverything() {
     }
     amplitude = new p5.Amplitude();
 
+    
     initSpeechRec(); //speech recognisation started only after presseing "stop" else it is stopped.
 
 
 }
 
+/*A callback function to extract the features which are returned by the Meyda analyzer*/
 function processFeatures(features) {
 
     console.log(features);
@@ -190,6 +199,8 @@ function processFeatures(features) {
 
 }
 
+/*Initializes the speech recorder 
+/*Ref: https://editor.p5js.org/re7l/sketches/SkcHNSSKQ*/
 function initSpeechRec() {
     //ref: https://github.com/IDMNYU/p5.js-speech/blob/master/examples/05continuousrecognition.html
     voiceCommandsRec = new p5.SpeechRec('en-UK', extractCommands);
@@ -202,6 +213,7 @@ function setup() {
 };
 
 function draw() {
+    /*Initialize the display setup*/
     background(180, 100);
 
     fill(0);
@@ -218,8 +230,12 @@ function draw() {
     audioData[adoDataIndex]['loadedAudio'].rate(sliderRate.value());
     audioData[adoDataIndex]['loadedAudio'].pan(sliderPan.value());
 
+    /*Draw a specturm for the current running track
+    Ref: Intelligent signal processing course Exercise 8 */
     let spectrum = fft.analyze();
     drawSpectrum(spectrum, 200, 50);
+
+    /*Draw the background shapes based on the current selection of the shape.*/
     console.log(shape);
     if (shape == 'circle') {
         drawCircles();
@@ -229,10 +245,11 @@ function draw() {
         drawArcs();
     }
 
+    /*Draw the flowers only for the file Kalte_Ohren_(_Remix_).mp3 */
     showFlowers();
 }
 
-
+/*Draw the flowers - PEr feature one flower, map it's parameters to the petal length, color of the petal, amplitude of the track*/
 function showFlowers() {
     if (displayFlowers && audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
         let centerColor = featureColors[audioData[adoDataIndex]['features'][0]];
@@ -245,23 +262,6 @@ function showFlowers() {
         }
 
     }
-}
-
-function drawSpectrum(spectrum, translateX, translatey) {
-
-    push();
-    translate(translateX, translatey);
-    scale(0.33, 0.20);
-    noStroke();
-    fill(60);
-    rect(0, 0, width, height);
-    fill(255, 0, 0);
-    for (let i = 0; i < spectrum.length; i++) {
-        let x = map(i, 0, spectrum.length, 0, width);
-        let h = -height + map(spectrum[i], 0, 255, height, 0);
-        rect(x, height, width / spectrum.length, h);
-    }
-    pop();
 }
 
 function drawFlowers(petalColor, centerColor, StemX, petalLength) {
@@ -297,6 +297,27 @@ function drawAFlower(stemHeight, stemStart, petalColor, centerColor, petalLength
 
 }
 
+
+/*Draw fft spectrum- Exercise 8 from coursera intelligent signal processing course*/
+function drawSpectrum(spectrum, translateX, translatey) {
+
+    push();
+    translate(translateX, translatey);
+    scale(0.33, 0.20);
+    noStroke();
+    fill(60);
+    rect(0, 0, width, height);
+    fill(255, 0, 0);
+    for (let i = 0; i < spectrum.length; i++) {
+        let x = map(i, 0, spectrum.length, 0, width);
+        let h = -height + map(spectrum[i], 0, 255, height, 0);
+        rect(x, height, width / spectrum.length, h);
+    }
+    pop();
+}
+
+/*Draw rectangles whos two sides are mapped to a feature value
+applicable to first 4 features only*/
 function drawRects() {
     fill(featureColors[audioData[adoDataIndex]['features'][0]]);
     rect(50, 275, lowerLeft, lowerLeft, 0, HALF_PI);
@@ -308,6 +329,8 @@ function drawRects() {
     rect(500, 275, upperLeft, upperLeft, PI + HALF_PI, 2 * PI);
 }
 
+/*Draw circles whos two radius is mapped to a feature value
+applicable to first 4 features only*/
 function drawCircles() {
     // Get the current amplitude level of the audio
     level = amplitude.getLevel();
@@ -336,12 +359,16 @@ function drawCircles() {
 
 }
 
+/*A helper function: extracts a file name from the path*/
 function extractFileName(fullPath) {
     /*ref:https://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript*/
     var filename = fullPath.split(['/', '\\']).pop();
     return filename
 }
 
+/*Draw circles whos two radius is mapped to a feature value
+applicable to first 4 features only
+Ref: Exercise 8 from coursera Intelligent signal processing course*/
 function drawArcs() {
     let x = width / 2;
     let y = height / 2;
@@ -355,12 +382,15 @@ function drawArcs() {
     arc(x, y, upperLeft, upperLeft, PI + HALF_PI, 2 * PI);
 }
 
+/*Jumps to the next portion of the song
+Ref: Exercise 8 from coursera Intelligent signal processing course*/
 function jumpSong() {
     var dur = audioData[adoDataIndex]['loadedAudio'].duration();
     var t = random(dur);
     audioData[adoDataIndex]['loadedAudio'].jump(t);
 }
 
+/*Play and stop song control, also enables the analyzer and speech recogniser*/
 function playStopSound() {
     if (audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
         audioData[adoDataIndex]['loadedAudio'].stop();
@@ -370,7 +400,7 @@ function playStopSound() {
         background(180);
 
     } else {
-
+        //start running the track and enable the analyzer as well as the voice recorder
         audioData[adoDataIndex]['loadedAudio'].loop()
         analyzer.start();
         voiceCommandsRec.stop()
@@ -381,17 +411,19 @@ function playStopSound() {
 
 }
 
+/*The app allows to select next track using this button*/
 function loadNextTrack() {
     if (!audioData[adoDataIndex]['loadedAudio'].isPlaying()) {
         if (adoDataIndex < (audioData.length - 1)) {
-            adoDataIndex++;
+            adoDataIndex++; //point to the next track
         } else {
-            adoDataIndex = 0;
+            adoDataIndex = 0; //wrap over
         }
+        //store the variables and then reload the app
         allowToPlayTrack = true;
         localStorage.setItem('allowToPlayTrack', JSON.stringify(allowToPlayTrack));
         localStorage.setItem('adoDataIndex', JSON.stringify(adoDataIndex));
-        reloadSketch();
+        reloadSketch(); //reload the app
     }
 
 }
@@ -402,10 +434,11 @@ function reloadSketch() {
     localStorage.setItem('allowToPlayTrack', JSON.stringify(allowToPlayTrack));
 
     preload();
-    // Reload the sketch by calling the setup() function again
+    // Reload the sketch by calling the setup like function again
     setupEverything()
 }
 
+/*Extract voice commands from the voice recorder and pass it for further processing*/
 function extractCommands() {
     //Ref:https://idmnyu.github.io/p5.js-speech/
     let transcript = voiceCommandsRec.resultString;
@@ -416,6 +449,7 @@ function extractCommands() {
 
 }
 
+/*Check if the voice input matches with the required commands and process it by changing the current shape*/
 function processCommands(transcript) {
     // Check if expected commands are present in the speech, and set the appropriate shape for the recognised command
     if (transcript.includes('circle')) {
