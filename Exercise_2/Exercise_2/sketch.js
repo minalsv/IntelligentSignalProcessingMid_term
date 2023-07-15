@@ -32,8 +32,8 @@ let audioData = [{
     {
         loadedAudio: null,
         file: '../sounds/Kalte_Ohren_(_Remix_).mp3',
-        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
-        featureFactors: [1000, 10, 10, 100]
+        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis', 'energy'],
+        featureFactors: [1000, 10, 10, 100, 100]
     }];
 
 
@@ -139,6 +139,8 @@ function processFeatures(features) {
         upperLeft = features[audioData[adoDataIndex]['features'][2]] * audioData[adoDataIndex]['featureFactors'][2];
         upperRight = features[audioData[adoDataIndex]['features'][3]] * audioData[adoDataIndex]['featureFactors'][3];
         console.log(lowerRight, lowerLeft, upperLeft, upperRight);
+    } else {
+
     }
 }
 
@@ -164,7 +166,7 @@ function draw() {
     fill(0, 0, 255); // Red color
     // Display text on the canvas
     text('Selected track: ' + extractFileName(audioData[adoDataIndex]['file']), 500, 20);
-    text('Stop the track to give voice commands: Rectangle, Circle, Arcs', 500, 40);
+    text('Stop the track to give voice commands: Rectangle, Circle, Arc', 500, 40);
     let vol = Math.pow(sliderVolume.value(), 3);
     audioData[adoDataIndex]['loadedAudio'].setVolume(vol);
     audioData[adoDataIndex]['loadedAudio'].rate(sliderRate.value());
@@ -177,10 +179,10 @@ function draw() {
         drawCircles();
     } else if (shape == 'rectangle') {
         drawRects();
-    } else {
+    } else if (shape == 'arc'){
         drawArcs();
     }
-
+    drawFlowers();
 }
 
 function drawSpectrum(spectrum, translateX, translatey) {
@@ -198,6 +200,34 @@ function drawSpectrum(spectrum, translateX, translatey) {
         rect(x, height, width / spectrum.length, h);
     }
     pop();
+}
+
+function drawFlowers(petalColors,stemColor,stemAngle) {
+    
+    //Ref: https://editor.p5js.org/aanapandey05/sketches/r3diSJ9Gb
+    // Draw a stem
+    
+    // Get the current amplitude level of the audio
+    level = amplitude.getLevel();
+
+    // Map the amplitude to the y-coordinate of the circle
+    let stemHeight = random(map(level, 0, 1, height/2, height/2 - 100), height/2);
+    let stemStart = width / 2 - 5; 
+    fill(0, 128, 0); // Green color
+    rect(stemStart, stemHeight, 10, height / 2);
+
+    // Draw petals
+    fill(255, 255, 0); // Yellow color
+    for (let angle = 0; angle < 360; angle += 60) {
+        push();
+        translate(stemStart+5, stemHeight);
+        rotate(radians(angle));
+        ellipse(0, -50, 40, 80);
+        fill(255, 127, 80);
+        ellipse(0 , -20, 30);
+        pop();
+    }
+
 }
 
 function drawRects() {
@@ -327,8 +357,8 @@ function processCommands(transcript) {
         shape = 'circle';
     } else if (transcript.includes('rectangle')) {
         shape = 'rectangle';
-    } else if (transcript.includes('arcs')) {
-        shape = 'arcs';
+    } else if (transcript.includes('arc') || transcript.includes('Ark')) {
+        shape = 'arc';
     }
 
 }
