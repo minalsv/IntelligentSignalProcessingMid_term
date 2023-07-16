@@ -25,15 +25,15 @@ let adoDataIndex = 0;
 let audioData = [{
         loadedAudio: null,
         file: 'sounds/Ex2_sound1.wav',
-        features: ['rms', 'zcr', 'spectralCrest', 'spectralKurtosis'],
-        featureFactors: [1000, 10, 10, 10]
+        features: ['amplitudeSpectrum', 'spectralCentroid', 'spectralCrest', 'spectralKurtosis'],
+        featureFactors: [1000, 100, 10, 10]
     },
 
     {
         loadedAudio: null,
         file: 'sounds/Ex2_sound2.wav',
         features: ['rms', 'zcr', 'spectralCrest', 'energy'],
-        featureFactors: [1000, 10, 10, 100]
+        featureFactors: [1000, 10, 10, 1000]
     },
 
     {
